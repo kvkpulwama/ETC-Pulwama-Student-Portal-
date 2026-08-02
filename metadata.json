@@ -1,0 +1,6 @@
+{
+  "name": "ETC Pulwama Student Portal",
+  "description": "Official student portal for Extension Training Centre (ETC) Pulwama with course offerings, student registration & login dashboard, downloads, media gallery, and campus contact details.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
