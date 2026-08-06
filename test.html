@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html><body><script>
+window.addEventListener('error', (e) => {
+  document.body.innerHTML = '<pre style="color:red">' + e.error.stack + '</pre>';
+});
+</script></body></html>

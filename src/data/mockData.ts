@@ -16,7 +16,7 @@ export const INSTITUTION_INFO = {
   campusArea: '35 Acres (Orchard, Hi-Tech Nursery, Organic Farm & Labs)',
   principalName: 'Dr. Javeed Ahmad Mugloo',
   principalDesignation: 'Prof. & Head',
-  principalPhoto: '/prof-mugloo.png',
+  principalPhoto: '/prof-mugloo-final.jpg',
   principalMessage: 'Welcome to Extension Training Centre Pulwama. Our mission is to impart technical hands-on training in temperate horticulture, modern agronomy, organic farming, and hi-tech greenhouse management to youth and field extension personnel of J&K.'
 };
 
@@ -146,7 +146,7 @@ export const COURSES: Course[] = [
   {
     id: 'of-201',
     code: 'OF-201',
-    title: 'Organic Farming & Vermicomposting Certification',
+    title: 'Departmental Trainings',
     category: 'Short-Term Training',
     duration: '3 Months (Certificate)',
     eligibility: '10th Pass or Practicing Farmer / Rural Youth',
@@ -282,7 +282,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Administration & Pomology',
     experience: '24+ Years in Extension & Research',
     email: 'principal.etcpulwama@jk.gov.in',
-    image: '/prof-mugloo.png',
+    image: '/prof-mugloo-final.jpg',
     specialization: 'Temperate Fruit Pomology & Extension Architecture'
   },
   {

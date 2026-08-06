@@ -23,8 +23,8 @@ import {
 } from 'lucide-react';
 import { NavigationPage, StudentProfile } from '../types';
 import { INSTITUTION_INFO, NOTICES } from '../data/mockData';
-import skuastEmblemImg from '../assets/images/skuast-emblem.png';
-import icarLogoImg from '../assets/images/icar-logo.png';
+
+
 
 interface HeaderProps {
   currentPage: NavigationPage;
@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-lg border-2 border-emerald-600 flex items-center justify-center overflow-hidden group-hover:scale-105 group-hover:border-amber-400 transition-all">
               <img 
-                src={skuastEmblemImg} 
+                src="/skuast-logo-final.png" 
                 alt="SKUAST-K Emblem Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"
@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 border-2 border-emerald-600 shadow-lg flex items-center justify-center overflow-hidden group-hover:scale-105 group-hover:border-amber-400 transition-all">
               <img 
-                src={icarLogoImg} 
+                src="/icar-logo-final.jpg" 
                 alt="ICAR Logo" 
                 className="w-full h-full object-contain p-0.5"
                 referrerPolicy="no-referrer"

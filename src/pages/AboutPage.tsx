@@ -1,7 +1,7 @@
 import React from 'react';
 import { INSTITUTION_INFO, FACULTY_LIST } from '../data/mockData';
-import skuastEmblemImg from '../assets/images/skuast-emblem.png';
-import icarLogoImg from '../assets/images/icar-logo.png';
+
+
 import { 
   Building2, 
   Target, 
@@ -91,8 +91,8 @@ export const AboutPage: React.FC = () => {
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
             <span className="text-emerald-700 font-bold text-xs uppercase block">Academic Collaboration</span>
             <div className="flex items-center gap-2">
-              <img src={skuastEmblemImg} alt="SKUAST" className="w-7 h-7 object-contain" referrerPolicy="no-referrer" />
-              <img src={icarLogoImg} alt="ICAR" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
+              <img src="/skuast-logo-final.png" alt="SKUAST" className="w-7 h-7 object-contain" referrerPolicy="no-referrer" />
+              <img src="/icar-logo-final.jpg" alt="ICAR" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
               <p className="font-extrabold text-slate-900 text-xs">SKUAST-K & ICAR Extension Guidelines</p>
             </div>
           </div>

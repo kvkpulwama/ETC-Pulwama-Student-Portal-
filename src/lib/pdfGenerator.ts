@@ -112,7 +112,10 @@ const loadStudentImage = (url: string): Promise<HTMLImageElement | null> => {
 /**
  * Generates an official Examination Hall Ticket / Roll No. Slip PDF for a student.
  */
-export const generateRollNoSlipPDF = async (student: StudentProfile) => {
+export const generateRollNoSlipPDF = async (
+  student: StudentProfile,
+  overrides?: { rollNo?: string; session?: string; course?: string; semester?: string }
+) => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -154,7 +157,8 @@ export const generateRollNoSlipPDF = async (student: StudentProfile) => {
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text(`EXAMINATION HALL TICKET / ROLL NO. SLIP - SESSION ${(student.batchYear || '2026-27').toUpperCase()}`, pageWidth / 2, 53, { align: 'center' });
+  const sessionStr = overrides?.session || student.batchYear || '2026-27';
+  doc.text(`EXAMINATION HALL TICKET / ROLL NO. SLIP - SESSION ${sessionStr.toUpperCase()}`, pageWidth / 2, 53, { align: 'center' });
 
   // Student Details Box
   const startY = 64;
@@ -173,12 +177,13 @@ export const generateRollNoSlipPDF = async (student: StudentProfile) => {
   const valX = 68;
 
   const rows = [
-    { label: 'Roll Number:', val: student.rollNumber || 'BHT-2026-27-101', bold: true },
+    { label: 'Roll Number:', val: overrides?.rollNo || student.rollNumber || 'BHT-2026-27-101', bold: true },
     { label: 'Registration No:', val: student.registrationNumber || 'JK-ETC-2026-9081', bold: false },
     { label: 'Candidate Name:', val: student.name.toUpperCase(), bold: true },
     { label: 'Father / Guardian:', val: (student.guardianName || 'N/A').toUpperCase(), bold: false },
-    { label: 'Programme / Course:', val: student.courseTitle, bold: true },
-    { label: 'Batch / Session:', val: student.batchYear || '2026 - 2027', bold: false },
+    { label: 'Programme / Course:', val: overrides?.course || student.courseTitle, bold: true },
+    { label: 'Semester:', val: overrides?.semester || '1st Semester', bold: true },
+    { label: 'Batch / Session:', val: overrides?.session || student.batchYear || '2026 - 2027', bold: false },
     { label: 'Exam Centre:', val: 'Main Examination Hall, ETC Malangpora Campus, Pulwama', bold: false },
     { label: 'Reporting Time:', val: '09:30 AM (Shift - I)', bold: false },
     { label: 'District / State:', val: student.address || 'Pulwama, J&K', bold: false }

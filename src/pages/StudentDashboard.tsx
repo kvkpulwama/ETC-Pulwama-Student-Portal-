@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StudentProfile, NavigationPage, StudentMark } from '../types';
 import { DEMO_MARKS, DEMO_ASSIGNMENTS, DEMO_TIMETABLE } from '../data/mockData';
 import { StudentIdCard } from '../components/StudentIdCard';
-import { generateRollNoSlipPDF } from '../lib/pdfGenerator';
+import { RollNoSlipModal } from '../components/RollNoSlipModal';
 import { 
   UserCircle, 
   Award, 
@@ -34,9 +34,10 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onNavigate
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'idcard' | 'marksheet' | 'timetable' | 'assignments' | 'stipend'
+    'overview' | 'idcard' | 'marksheet' | 'timetable' | 'assignments' | 'hostel'
   >('overview');
 
+  const [showRollNoModal, setShowRollNoModal] = useState(false);
   const [assignmentSubmitted, setAssignmentSubmitted] = useState<Record<string, boolean>>({});
 
   const marksList: StudentMark[] = DEMO_MARKS[student.rollNumber] || [
@@ -90,7 +91,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
         {/* Header Actions */}
         <div className="flex flex-wrap items-center gap-3 shrink-0 w-full md:w-auto justify-end border-t md:border-t-0 border-emerald-800/80 pt-4 md:pt-0">
           <button
-            onClick={async () => await generateRollNoSlipPDF(student)}
+            onClick={() => setShowRollNoModal(true)}
             className="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-black text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 border border-amber-300 hover:scale-105"
             title="Download official Examination Hall Ticket PDF"
           >
@@ -124,7 +125,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           { id: 'marksheet', label: 'Marksheet & Grades', icon: <Award className="w-4 h-4" /> },
           { id: 'timetable', label: 'Timetable & Attendance', icon: <Calendar className="w-4 h-4" /> },
           { id: 'assignments', label: 'Assignments & Notes', icon: <FileText className="w-4 h-4" /> },
-          { id: 'stipend', label: 'Hostel & Stipend', icon: <DollarSign className="w-4 h-4" /> }
+          { id: 'hostel', label: 'Hostel Allocation', icon: <Building className="w-4 h-4" /> }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -165,14 +166,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               </span>
               <p className="text-2xl font-black text-slate-900">{student.cgpa}</p>
               <p className="text-[11px] text-emerald-700 font-semibold">Sem I & II Score</p>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Govt Stipend Status
-              </span>
-              <p className="text-sm font-extrabold text-amber-800">{student.stipendStatus}</p>
-              <p className="text-[11px] text-slate-500">Rs. 1,500/Mo Granted</p>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
@@ -432,6 +425,10 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {showRollNoModal && (
+        <RollNoSlipModal onClose={() => setShowRollNoModal(false)} loggedInStudent={student} />
       )}
     </div>
   );

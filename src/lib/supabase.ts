@@ -4,8 +4,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const storedUrl = typeof window !== 'undefined' ? localStorage.getItem('etc_supabase_url') : null;
 const storedKey = typeof window !== 'undefined' ? localStorage.getItem('etc_supabase_key') : null;
 
-export const DEFAULT_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://ssypyegksjrpjgbcoqyc.supabase.co';
-export const DEFAULT_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_P19UWTAtI4Ujeg9HrYohqA_s6podg89';
+export const DEFAULT_SUPABASE_URL = 'https://ssypyegksjrpjgbcoqyc.supabase.co';
+export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_P19UWTAtI4Ujeg9HrYohqA_s6podg89';
 
 export const activeSupabaseUrl = storedUrl || DEFAULT_SUPABASE_URL;
 export const activeSupabaseKey = storedKey || DEFAULT_SUPABASE_ANON_KEY;
