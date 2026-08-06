@@ -46,6 +46,8 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
   const [regCourseId, setRegCourseId] = useState('bht-101');
   const [regGuardian, setRegGuardian] = useState('');
   const [regAddress, setRegAddress] = useState('');
+  const [regDOB, setRegDOB] = useState('');
+  const [regQualification, setRegQualification] = useState('10th');
   const [regDistrict, setRegDistrict] = useState('Pulwama');
   const [regSession, setRegSession] = useState('2026 - 2027');
   const [regRollNo, setRegRollNo] = useState('BHT-2026-27-101');
@@ -354,8 +356,10 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
         email: cleanEmail,
         phone: cleanPhone,
         guardianName: cleanGuardian || 'Guardian',
-        dateOfBirth: '15/05/2003',
+        dateOfBirth: regDOB || '2004-01-15',
+        qualification: regQualification,
         gender: 'Male',
+        district: regDistrict,
         address: cleanAddress ? `${cleanAddress}, District ${regDistrict}, J&K` : `District ${regDistrict}, J&K`,
         courseId: regCourseId,
         courseTitle: selectedCourseObj ? selectedCourseObj.title : 'Basic Horticulture Training Course (BHT)',
@@ -667,6 +671,21 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Date of Birth *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={regDOB}
+                    onChange={(e) => setRegDOB(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none font-medium text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     District *
                   </label>
                   <select
@@ -683,19 +702,34 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                     ].map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Street Address / Village
-                </label>
-                <input
-                  type="text"
-                  value={regAddress}
-                  onChange={(e) => setRegAddress(e.target.value)}
-                  placeholder="Tahab, Pulwama"
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Qualification *
+                  </label>
+                  <select
+                    required
+                    value={regQualification}
+                    onChange={(e) => setRegQualification(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none font-medium text-slate-900"
+                  >
+                    {['10th', '12th', 'BA', 'B.Sc', 'MA', 'M.Sc', 'Other'].map(q => (
+                      <option key={q} value={q}>{q}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Street Address / Village
+                  </label>
+                  <input
+                    type="text"
+                    value={regAddress}
+                    onChange={(e) => setRegAddress(e.target.value)}
+                    placeholder="Tahab, Pulwama"
+                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  />
+                </div>
               </div>
 
               {/* Upload Candidate Passport Photograph */}

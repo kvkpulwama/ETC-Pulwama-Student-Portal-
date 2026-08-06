@@ -83,17 +83,21 @@ export interface StudentProfile {
   guardianName: string;
   dateOfBirth: string;
   gender: string;
+  qualification?: string;
+  district?: string;
   address: string;
   courseId: string;
   courseTitle: string;
   batchYear: string;
-  photoUrl: string;
-  bloodGroup: string;
-  attendancePercentage: number;
-  cgpa: string;
-  hostelStatus: string;
-  stipendStatus: string;
-  semester: string;
+  enrollmentDate?: string;
+  status?: string;
+  semester?: string;
+  attendancePercentage?: number;
+  photoUrl?: string;
+  bloodGroup?: string;
+  cgpa?: string;
+  hostelStatus?: string;
+  stipendStatus?: string;
 }
 
 export interface StudentMark {

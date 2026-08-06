@@ -105,17 +105,21 @@ export async function fetchStudentsFromSupabase(): Promise<any[]> {
       guardianName: row.guardian_name || row.guardianName || 'Guardian',
       dateOfBirth: row.date_of_birth || row.dateOfBirth || '01/01/2004',
       gender: row.gender || 'Male',
+      qualification: row.qualification || '',
+      district: row.district || '',
       address: row.address || 'Pulwama, Jammu & Kashmir',
       courseId: row.course_id || row.courseId || 'bht-101',
       courseTitle: row.course_title || row.courseTitle || 'Basic Horticulture Training Course (BHT)',
       batchYear: row.batch_year || row.batchYear || '2026 - 2027',
+      enrollmentDate: row.enrollment_date || row.enrollmentDate || '',
+      status: row.status || '',
+      semester: row.semester || 'Semester I',
       photoUrl: row.photo_url || row.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
       bloodGroup: row.blood_group || row.bloodGroup || 'B +ve',
       attendancePercentage: row.attendance_percentage || row.attendancePercentage || 100,
       cgpa: row.cgpa || 'Enrolled (Semester I)',
       hostelStatus: row.hostel_status || row.hostelStatus || 'Under Verification',
-      stipendStatus: row.stipend_status || row.stipendStatus || 'Active (Rs. 1,500/Month)',
-      semester: row.semester || 'Semester I'
+      stipendStatus: row.stipend_status || row.stipendStatus || 'Active (Rs. 1,500/Month)'
     }));
   } catch (e) {
     console.warn('Supabase fetch students error:', e);
@@ -172,17 +176,21 @@ export async function getStudentProfileFromSupabase(identifier: string) {
         guardianName: data.guardian_name || data.guardianName || 'Guardian',
         dateOfBirth: data.date_of_birth || data.dateOfBirth || '01/01/2004',
         gender: data.gender || 'Male',
+        qualification: data.qualification || '',
+        district: data.district || '',
         address: data.address || 'Pulwama, Jammu & Kashmir',
         courseId: data.course_id || data.courseId || 'bht-101',
         courseTitle: data.course_title || data.courseTitle || 'Basic Horticulture Training Course (BHT)',
         batchYear: data.batch_year || data.batchYear || '2026 - 2027',
+        enrollmentDate: data.enrollment_date || data.enrollmentDate || '',
+        status: data.status || '',
+        semester: data.semester || 'Semester I',
         photoUrl: data.photo_url || data.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
         bloodGroup: data.blood_group || data.bloodGroup || 'B +ve',
         attendancePercentage: data.attendance_percentage || data.attendancePercentage || 92,
         cgpa: data.cgpa || '8.80 / 10',
         hostelStatus: data.hostel_status || data.hostelStatus || 'Block A, Room 102',
-        stipendStatus: data.stipend_status || data.stipendStatus || 'Active (Rs. 1,500/Month)',
-        semester: data.semester || 'Semester I'
+        stipendStatus: data.stipend_status || data.stipendStatus || 'Active (Rs. 1,500/Month)'
       };
     }
   } catch (e) {
@@ -245,17 +253,21 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       guardian_name: student.guardianName,
       date_of_birth: student.dateOfBirth,
       gender: student.gender,
+      qualification: student.qualification || '',
+      district: student.district || '',
       address: student.address,
       course_id: student.courseId,
       course_title: student.courseTitle,
       batch_year: student.batchYear,
+      enrollment_date: student.enrollmentDate,
+      status: student.status,
+      semester: student.semester,
+      attendance_percentage: student.attendancePercentage,
       photo_url: compactPhoto,
       blood_group: student.bloodGroup,
-      attendance_percentage: student.attendancePercentage,
       cgpa: student.cgpa,
       hostel_status: student.hostelStatus,
-      stipend_status: student.stipendStatus,
-      semester: student.semester
+      stipend_status: student.stipendStatus
     };
 
     // Primary upsert
@@ -264,7 +276,10 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       if (!upsertErr && upsertData) {
         return { success: true, data: upsertData };
       }
-    } catch (upsertNetErr) {}
+      console.error("Supabase upsert error:", upsertErr);
+    } catch (upsertNetErr) {
+      console.error("Supabase upsert net error:", upsertNetErr);
+    }
 
     // Insert essential fields fallback
     try {
@@ -276,6 +291,7 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
         email: student.email,
         phone: student.phone,
         guardian_name: student.guardianName,
+        qualification: student.qualification || '',
         course_id: student.courseId,
         course_title: student.courseTitle,
         batch_year: student.batchYear,
@@ -285,9 +301,12 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       if (!insertErr && insertData) {
         return { success: true, data: insertData };
       }
-    } catch (insertNetErr) {}
+      console.error("Supabase insert error:", insertErr);
+    } catch (insertNetErr) {
+      console.error("Supabase insert net error:", insertNetErr);
+    }
 
-    return { success: true, error: 'Record saved locally (Offline mode active)' };
+    return { success: false, error: 'Failed to save to Supabase. Check console logs.' };
   } catch (e: any) {
     return { success: true, error: 'Record saved locally' };
   }

@@ -27,7 +27,12 @@ import {
   Building2,
   FileSpreadsheet,
   Plus,
-  Database
+  Database,
+  Camera,
+  Key,
+  Hash,
+  MapPin,
+  User
 } from 'lucide-react';
 
 interface AdminPageProps {
@@ -60,6 +65,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [notification, setNotification] = useState<string | null>(null);
 
   // Form state for adding/editing student
+  const [studentPassword, setStudentPassword] = useState('EtcPass@123');
+  const [adminPhotoError, setAdminPhotoError] = useState('');
   const [formData, setFormData] = useState<Partial<StudentProfile>>({
     name: '',
     email: '',
@@ -71,13 +78,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     batchYear: '2026 - 2027',
     gender: 'Male',
     dateOfBirth: '2004-01-15',
+    district: 'Pulwama',
     address: 'Pulwama, J&K',
     bloodGroup: 'B +ve',
     hostelStatus: 'Block A, Room 101',
     stipendStatus: 'Active (Rs. 1,500/Month)',
     semester: 'Semester I',
     attendancePercentage: 92,
-    cgpa: '8.50 / 10',
+    cgpa: 'Enrolled (Semester I)',
     photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
   });
 
@@ -181,12 +189,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     showToast('Logged out of Admin Portal.');
   };
 
+  // Handle Admin Photo Upload
+  const handleAdminPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAdminPhotoError('');
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setAdminPhotoError('Please select a valid image file (JPEG or PNG format).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setAdminPhotoError('Image file size should not exceed 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({ ...prev, photoUrl: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Helper to suggest standard Roll Number format
+  const handleAdminSuggestRollNo = () => {
+    const courseObj = COURSES.find(c => c.id === formData.courseId);
+    const code = courseObj ? courseObj.code : 'BHT';
+    const num = Math.floor(100 + Math.random() * 900);
+    const batch = formData.batchYear || '2026 - 2027';
+    const shortSession = batch.replace(/\s+/g, '').replace('2026-2027', '2026-27').replace('2025-2026', '2025-26');
+    setFormData(prev => ({ ...prev, rollNumber: `${code}-${shortSession}-${num}` }));
+  };
+
   // Open Add Student Modal
   const handleOpenAddModal = () => {
     const randomNum = Math.floor(100 + Math.random() * 900);
     setFormData({
       id: `s-admin-${Date.now()}`,
-      rollNumber: `ETC/2026/BHT-${randomNum}`,
+      rollNumber: `BHT-2026-27-${randomNum}`,
       registrationNumber: `JK-ETC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       name: '',
       email: '',
@@ -197,15 +238,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       batchYear: '2026 - 2027',
       gender: 'Male',
       dateOfBirth: '2004-01-15',
+      district: 'Pulwama',
       address: 'Pulwama, Jammu & Kashmir',
       bloodGroup: 'B +ve',
       hostelStatus: 'Block A, Room 101',
       stipendStatus: 'Active (Rs. 1,500/Month)',
       semester: 'Semester I',
       attendancePercentage: 95,
-      cgpa: 'Enrolled',
+      cgpa: 'Enrolled (Semester I)',
       photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
     });
+    setStudentPassword('EtcPass@123');
+    setAdminPhotoError('');
     setEditingStudent(null);
     setShowAddModal(true);
   };
@@ -213,6 +257,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Open Edit Student Modal
   const handleOpenEditModal = (student: StudentProfile) => {
     setFormData({ ...student });
+    setStudentPassword('');
+    setAdminPhotoError('');
     setEditingStudent(student);
     setShowAddModal(true);
   };
@@ -221,7 +267,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const handleSaveStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.rollNumber) {
-      alert("Please fill in Name, Email, and Roll Number.");
+      alert("Please fill in Candidate Name, Email, and Roll Number.");
       return;
     }
 
@@ -229,28 +275,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
     const updatedStudent: StudentProfile = {
       id: formData.id || `s-${Date.now()}`,
-      rollNumber: formData.rollNumber || `ETC/2026/${Math.floor(100 + Math.random() * 900)}`,
+      rollNumber: formData.rollNumber || `BHT-2026-27-${Math.floor(100 + Math.random() * 900)}`,
       registrationNumber: formData.registrationNumber || `JK-ETC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: formData.name,
+      name: formData.name.trim(),
       email: formData.email.toLowerCase().trim(),
       phone: formData.phone || '+91 ',
       guardianName: formData.guardianName || 'Guardian',
-      dateOfBirth: formData.dateOfBirth || '2004-01-01',
+      dateOfBirth: formData.dateOfBirth || '2004-01-15',
       gender: formData.gender || 'Male',
+      qualification: formData.qualification || '10th',
+      district: formData.district || 'Pulwama',
       address: formData.address || 'Pulwama, J&K',
       courseId: formData.courseId || 'bht-101',
       courseTitle: selectedCourseObj ? selectedCourseObj.title : (formData.courseTitle || 'Basic Horticulture Training Course (BHT)'),
       batchYear: formData.batchYear || '2026 - 2027',
       photoUrl: formData.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
       bloodGroup: formData.bloodGroup || 'B +ve',
-      attendancePercentage: Number(formData.attendancePercentage) || 90,
-      cgpa: formData.cgpa || '8.50 / 10',
-      hostelStatus: formData.hostelStatus || 'Block A',
+      attendancePercentage: Number(formData.attendancePercentage) || 95,
+      cgpa: formData.cgpa || 'Enrolled (Semester I)',
+      hostelStatus: formData.hostelStatus || 'Block A, Room 101',
       stipendStatus: formData.stipendStatus || 'Active (Rs. 1,500/Month)',
       semester: formData.semester || 'Semester I'
     };
 
-    // 1. Save to Supabase
+    // 1. Provision user in Supabase Auth if password provided and creating new student
+    if (!editingStudent && studentPassword) {
+      try {
+        await supabase.auth.signUp({
+          email: updatedStudent.email,
+          password: studentPassword,
+          options: {
+            data: { full_name: updatedStudent.name }
+          }
+        });
+      } catch (authErr) {
+        console.warn('Supabase Auth Signup Notice:', authErr);
+      }
+    }
+
+    // 2. Save Student Record to Supabase DB table
     try {
       const res = await saveStudentProfileToSupabase(updatedStudent);
       if (res && !res.success) {
@@ -260,7 +323,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       console.warn('Supabase Error:', sbErr);
     }
 
-    // 2. Update Local State
+    // 3. Update Local React State
     setStudents(prev => {
       const idx = prev.findIndex(s => s.id === updatedStudent.id || s.email === updatedStudent.email);
       if (idx >= 0) {
@@ -272,7 +335,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       }
     });
 
-    // 3. Update localStorage cache
+    // 4. Update localStorage cache
     const existingStr = localStorage.getItem('etc_registered_students');
     const existingList: StudentProfile[] = existingStr ? JSON.parse(existingStr) : [];
     const filtered = existingList.filter(s => s.id !== updatedStudent.id && s.email !== updatedStudent.email);
@@ -280,7 +343,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     localStorage.setItem('etc_registered_students', JSON.stringify(filtered));
 
     setShowAddModal(false);
-    showToast(editingStudent ? `Updated student profile: ${updatedStudent.name}` : `Added new student: ${updatedStudent.name}`);
+    showToast(editingStudent ? `Updated student profile: ${updatedStudent.name}` : `Added student & synced to Supabase: ${updatedStudent.name}`);
   };
 
   // Delete Student Handler
@@ -776,7 +839,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       {/* Modal: Add or Edit Student */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 my-8">
+          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 my-8">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-emerald-100 text-[#005E38] rounded-xl">
@@ -784,9 +847,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-slate-900 text-xl">
-                    {editingStudent ? 'Edit Student Record' : 'Add New Trainee Student'}
+                    {editingStudent ? 'Edit Student Record' : 'Add New Trainee Student (Admin Level)'}
                   </h3>
-                  <p className="text-xs text-slate-500">Student data will be stored securely in the database.</p>
+                  <p className="text-xs text-slate-500">
+                    Fill candidate details below to insert/update student profile directly into Supabase database.
+                  </p>
                 </div>
               </div>
 
@@ -798,135 +863,333 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveStudent} className="space-y-4 text-xs font-semibold text-slate-700">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSaveStudent} className="space-y-6 text-xs font-semibold text-slate-700">
+              
+              {/* Section 1: Candidate Personal Details */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-emerald-800 font-bold border-b border-slate-100 pb-1.5">
+                  <User className="w-4 h-4 text-emerald-700" />
+                  <span className="uppercase text-[11px] tracking-wider">1. Candidate Identity & Login Credentials</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Full Candidate Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name || ''}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g. Shahid Ahmad Bhat"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email || ''}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="student@gmail.com"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Mobile Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone || ''}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+91 9797XXXXXX"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                    />
+                  </div>
+
+                  {!editingStudent && (
+                    <div>
+                      <label className="block mb-1 font-bold text-slate-800">
+                        Set Student Password * (For Student Login)
+                      </label>
+                      <div className="relative">
+                        <Key className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                        <input
+                          type="text"
+                          required
+                          value={studentPassword}
+                          onChange={(e) => setStudentPassword(e.target.value)}
+                          placeholder="e.g. EtcPass@123"
+                          className="w-full pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl font-mono focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block font-bold text-slate-800">Candidate Roll Number *</label>
+                      <button
+                        type="button"
+                        onClick={handleAdminSuggestRollNo}
+                        className="text-[10px] text-emerald-700 hover:text-emerald-900 font-bold underline"
+                      >
+                        Fill Example Format
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <Hash className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                      <input
+                        type="text"
+                        required
+                        value={formData.rollNumber || ''}
+                        onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                        placeholder="e.g. BHT-2026-27-101"
+                        className="w-full pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl font-mono font-bold text-slate-900 focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Registration Number</label>
+                    <input
+                      type="text"
+                      value={formData.registrationNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                      placeholder="JK-ETC-2026-2405"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl font-mono text-slate-900 focus:ring-2 focus:ring-[#005E38] focus:outline-none bg-slate-50"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Course & Academic Information */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-emerald-800 font-bold border-b border-slate-100 pb-1.5">
+                  <GraduationCap className="w-4 h-4 text-emerald-700" />
+                  <span className="uppercase text-[11px] tracking-wider">2. Course Enrollment & Academic Details</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Academic Program Course *</label>
+                    <select
+                      value={formData.courseId || 'bht-101'}
+                      onChange={(e) => {
+                        const selectedCourse = COURSES.find(c => c.id === e.target.value);
+                        setFormData({
+                          ...formData,
+                          courseId: e.target.value,
+                          courseTitle: selectedCourse ? selectedCourse.title : formData.courseTitle
+                        });
+                      }}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
+                    >
+                      {COURSES.map(c => (
+                        <option key={c.id} value={c.id}>{c.title} ({c.code})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Session / Batch Year *</label>
+                    <select
+                      value={formData.batchYear || '2026 - 2027'}
+                      onChange={(e) => setFormData({ ...formData, batchYear: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-bold text-slate-900"
+                    >
+                      <option value="2026 - 2027">2026 - 2027</option>
+                      <option value="2025 - 2026">2025 - 2026</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Semester</label>
+                    <select
+                      value={formData.semester || 'Semester I'}
+                      onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
+                    >
+                      {['Semester I', 'Semester II', 'Semester III', 'Semester IV', 'Semester V', 'Semester VI'].map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Attendance Percentage (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formData.attendancePercentage !== undefined ? formData.attendancePercentage : 95}
+                      onChange={(e) => setFormData({ ...formData, attendancePercentage: parseInt(e.target.value) || 0 })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Demographics & Residential Details */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-emerald-800 font-bold border-b border-slate-100 pb-1.5">
+                  <MapPin className="w-4 h-4 text-emerald-700" />
+                  <span className="uppercase text-[11px] tracking-wider">3. Demographics & Residence</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Father / Guardian Name</label>
+                    <input
+                      type="text"
+                      value={formData.guardianName || ''}
+                      onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                      placeholder="e.g. Ghulam Hassan Bhat"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Gender *</label>
+                    <select
+                      required
+                      value={formData.gender || 'Male'}
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium text-slate-800"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Date of Birth *</label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.dateOfBirth || '2004-01-15'}
+                      onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">District *</label>
+                    <select
+                      required
+                      value={formData.district || 'Pulwama'}
+                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
+                    >
+                      {[
+                        "Anantnag", "Bandipora", "Baramulla", "Budgam", "Doda", "Ganderbal", 
+                        "Jammu", "Kathua", "Kishtwar", "Kulgam", "Kupwara", "Poonch", 
+                        "Pulwama", "Rajouri", "Ramban", "Reasi", "Samba", "Shopian", 
+                        "Srinagar", "Udhampur"
+                      ].map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Qualification *</label>
+                    <select
+                      required
+                      value={formData.qualification || '10th'}
+                      onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium text-slate-800"
+                    >
+                      {['10th', '12th', 'BA', 'B.Sc', 'MA', 'M.Sc', 'Other'].map(q => (
+                        <option key={q} value={q}>{q}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Blood Group</label>
+                    <select
+                      value={formData.bloodGroup || 'B +ve'}
+                      onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
+                    >
+                      {['A +ve', 'A -ve', 'B +ve', 'B -ve', 'O +ve', 'O -ve', 'AB +ve', 'AB -ve', 'Unknown'].map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold text-slate-800">Hostel Status</label>
+                    <input
+                      type="text"
+                      value={formData.hostelStatus || ''}
+                      onChange={(e) => setFormData({ ...formData, hostelStatus: e.target.value })}
+                      placeholder="e.g. Block A, Room 101"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block mb-1">Full Student Name *</label>
+                  <label className="block mb-1 font-bold text-slate-800">Street Address / Village</label>
                   <input
                     type="text"
-                    required
-                    value={formData.name || ''}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Shahid Ahmad Bhat"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email || ''}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="student@gmail.com"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Roll Number *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.rollNumber || ''}
-                    onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                    placeholder="e.g. ETC/2026/BHT-088"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl font-mono focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    value={formData.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 9797 123456"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Academic Program Course *</label>
-                  <select
-                    value={formData.courseId || 'bht-101'}
-                    onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  >
-                    {COURSES.map(c => (
-                      <option key={c.id} value={c.id}>{c.title}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block mb-1">Batch Year</label>
-                  <input
-                    type="text"
-                    value={formData.batchYear || '2026 - 2027'}
-                    onChange={(e) => setFormData({ ...formData, batchYear: e.target.value })}
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Guardian Name</label>
-                  <input
-                    type="text"
-                    value={formData.guardianName || ''}
-                    onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
-                    placeholder="e.g. Ghulam Hassan Bhat"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Hostel Status</label>
-                  <input
-                    type="text"
-                    value={formData.hostelStatus || ''}
-                    onChange={(e) => setFormData({ ...formData, hostelStatus: e.target.value })}
-                    placeholder="e.g. Block A, Room 102"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Stipend Status</label>
-                  <input
-                    type="text"
-                    value={formData.stipendStatus || ''}
-                    onChange={(e) => setFormData({ ...formData, stipendStatus: e.target.value })}
-                    placeholder="Active (Rs. 1,500/Month)"
-                    className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Attendance Percentage (%)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={formData.attendancePercentage || 90}
-                    onChange={(e) => setFormData({ ...formData, attendancePercentage: Number(e.target.value) })}
+                    value={formData.address || ''}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="e.g. Tahab, Pulwama"
                     className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block mb-1">Residential Address</label>
-                <textarea
-                  rows={2}
-                  value={formData.address || ''}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Village, Tehsil & District..."
-                  className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
-                />
+              {/* Section 4: Passport Photograph Upload */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <label className="block font-bold text-slate-800">
+                  Candidate Passport Photograph (Human Candidate Photo, JPEG/PNG &lt;5MB)
+                </label>
+                <div className="flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                  {formData.photoUrl ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={formData.photoUrl}
+                        alt="Candidate Photograph"
+                        className="w-16 h-20 rounded-xl object-cover border-2 border-[#005E38] shadow-sm"
+                      />
+                      <span className="absolute -bottom-1 -right-1 bg-[#005E38] text-white p-0.5 rounded-full">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="w-16 h-20 bg-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 shrink-0 border border-dashed border-slate-300">
+                      <Camera className="w-6 h-6" />
+                      <span className="text-[9px] font-bold mt-1">Photo</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-1 flex-1">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/jpg"
+                      onChange={handleAdminPhotoUpload}
+                      className="w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-[#005E38] file:text-white hover:file:bg-[#00482B] cursor-pointer"
+                    />
+                    <p className="text-[10px] text-slate-500">
+                      Upload passport size photograph or leave default.
+                    </p>
+                    {adminPhotoError && (
+                      <p className="text-[10px] font-bold text-red-600">{adminPhotoError}</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
+              {/* Actions */}
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
                 <button
                   type="button"
@@ -938,9 +1201,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#005E38] hover:bg-[#00482B] text-white font-bold rounded-xl transition-all shadow-md"
+                  className="px-6 py-2.5 bg-[#005E38] hover:bg-[#00482B] text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-2"
                 >
-                  {editingStudent ? 'Data Updated' : 'Save New Student'}
+                  <Database className="w-4 h-4 text-amber-300" />
+                  <span>{editingStudent ? 'Update Profile' : 'Save Student to Supabase'}</span>
                 </button>
               </div>
             </form>
@@ -978,7 +1242,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Email</span>
-                <span className="font-bold text-slate-800">{viewingStudent.email}</span>
+                <span className="font-bold text-slate-800 break-all">{viewingStudent.email}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Phone</span>
@@ -987,6 +1251,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Guardian</span>
                 <span className="font-bold text-slate-800">{viewingStudent.guardianName}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">District</span>
+                <span className="font-bold text-emerald-800">{viewingStudent.district || 'Pulwama'}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Batch</span>
@@ -999,6 +1267,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Stipend</span>
                 <span className="font-bold text-emerald-700">{viewingStudent.stipendStatus}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Blood Group</span>
+                <span className="font-bold text-slate-800">{viewingStudent.bloodGroup || 'B +ve'}</span>
               </div>
             </div>
 

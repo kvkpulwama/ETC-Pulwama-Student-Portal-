@@ -137,6 +137,7 @@ CREATE TABLE IF NOT EXISTS public.students (
   email TEXT NOT NULL,
   phone TEXT,
   guardian_name TEXT,
+  district TEXT,
   address TEXT,
   course_id TEXT,
   course_title TEXT,
