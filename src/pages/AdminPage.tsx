@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StudentProfile, NavigationPage } from '../types';
-import { DEMO_STUDENTS, COURSES } from '../data/mockData';
+import { COURSES } from '../data/mockData';
 import { supabase, fetchStudentsFromSupabase, saveStudentProfileToSupabase } from '../lib/supabase';
 import { SupabaseConfigGuide } from '../components/SupabaseConfigGuide';
 
@@ -81,10 +81,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     district: 'Pulwama',
     address: 'Pulwama, J&K',
     bloodGroup: 'B +ve',
-    hostelStatus: 'Block A, Room 101',
-    stipendStatus: 'Active (Rs. 1,500/Month)',
     semester: 'Semester I',
-    attendancePercentage: 92,
     cgpa: 'Enrolled (Semester I)',
     photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
   });
@@ -109,10 +106,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       // 3. Merge without duplicates (using email as map key)
       const studentMap = new Map<string, StudentProfile>();
 
-      // Base: Demo Students
-      DEMO_STUDENTS.forEach(s => {
-        if (s.email) studentMap.set(s.email.toLowerCase().trim(), s);
-      });
+      
 
       // Overlay: Locally registered students
       localStudents.forEach(s => {
@@ -127,7 +121,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setStudents(Array.from(studentMap.values()));
     } catch (err) {
       console.warn("Failed fetching students list:", err);
-      setStudents(DEMO_STUDENTS);
+      setStudents([]);
     } finally {
       setIsLoadingStudents(false);
     }
@@ -241,10 +235,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       district: 'Pulwama',
       address: 'Pulwama, Jammu & Kashmir',
       bloodGroup: 'B +ve',
-      hostelStatus: 'Block A, Room 101',
-      stipendStatus: 'Active (Rs. 1,500/Month)',
       semester: 'Semester I',
-      attendancePercentage: 95,
       cgpa: 'Enrolled (Semester I)',
       photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
     });
@@ -291,10 +282,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       batchYear: formData.batchYear || '2026 - 2027',
       photoUrl: formData.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
       bloodGroup: formData.bloodGroup || 'B +ve',
-      attendancePercentage: Number(formData.attendancePercentage) || 95,
       cgpa: formData.cgpa || 'Enrolled (Semester I)',
-      hostelStatus: formData.hostelStatus || 'Block A, Room 101',
-      stipendStatus: formData.stipendStatus || 'Active (Rs. 1,500/Month)',
       semester: formData.semester || 'Semester I'
     };
 
@@ -396,10 +384,32 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
+  const handleWipeDatabase = async () => {
+    if (!window.confirm("Are you sure you want to delete all student records except Jahangir Ahmad Magray? This will wipe the local storage and Supabase database.")) return;
+    
+    // Filter to keep only Jahangir
+    const keep = students.filter(s => s.name.toLowerCase().includes('jahangir ahmad magray'));
+    
+    try {
+      // 1. Delete from Supabase
+      const { error } = await supabase.from('students').delete().not('name', 'ilike', '%jahangir ahmad magray%');
+      if (error) console.warn('Supabase wipe note:', error);
+    } catch (e) {
+      console.warn(e);
+    }
+    
+    // 2. Overwrite Local Storage
+    localStorage.setItem('etc_registered_students', JSON.stringify(keep));
+    
+    // 3. Update State
+    setStudents(keep);
+    showToast('Database wiped successfully! Kept ' + keep.length + ' records.');
+  };
+
   // Export CSV Handler
   const handleExportCSV = () => {
     if (students.length === 0) return;
-    const headers = ['Roll Number', 'Registration No', 'Name', 'Email', 'Phone', 'Course', 'Batch', 'Hostel', 'Stipend Status'];
+    const headers = ['Roll Number', 'Registration No', 'Name', 'Email', 'Phone', 'Course', 'Batch', 'CGPA'];
     const rows = filteredStudents.map(s => [
       `"${s.rollNumber}"`,
       `"${s.registrationNumber}"`,
@@ -408,8 +418,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       `"${s.phone}"`,
       `"${s.courseTitle}"`,
       `"${s.batchYear}"`,
-      `"${s.hostelStatus}"`,
-      `"${s.stipendStatus}"`
+      `"${s.cgpa}"`
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
@@ -700,6 +709,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </button>
 
               <button
+                onClick={handleWipeDatabase}
+                className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 shadow-sm border border-red-500"
+                title="Wipe database except Jahangir"
+              >
+                <span className="hidden sm:inline">Wipe Database</span>
+              </button>
+
+              <button
                 onClick={handleSyncAllToSupabase}
                 disabled={isSyncingSupabase}
                 className="px-3 py-2 bg-emerald-800 hover:bg-emerald-900 text-amber-300 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 shadow-sm border border-emerald-600"
@@ -739,8 +756,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <th className="px-6 py-3">Student Details</th>
                   <th className="px-6 py-3">Roll & Reg Number</th>
                   <th className="px-6 py-3">Course / Batch</th>
-                  <th className="px-6 py-3">Hostel & Stipend</th>
-                  <th className="px-6 py-3">Attendance / CGPA</th>
+                  <th className="px-6 py-3">CGPA</th>
                   <th className="px-6 py-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -782,23 +798,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </span>
                       </td>
 
-                      <td className="px-6 py-3.5">
-                        <p className="text-slate-900 font-semibold">{student.hostelStatus}</p>
-                        <p className="text-emerald-700 font-bold text-[10px]">{student.stipendStatus}</p>
-                      </td>
-
-                      <td className="px-6 py-3.5">
-                        <div className="space-y-1">
-                          <span className="text-xs font-bold text-slate-900">{student.attendancePercentage}% Attendance</span>
-                          <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-[#005E38] rounded-full"
-                              style={{ width: `${student.attendancePercentage}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-[10px] text-slate-500 font-bold">CGPA: {student.cgpa}</p>
-                        </div>
-                      </td>
+                      <td className="px-6 py-3.5"><p className="font-bold text-slate-900">{student.cgpa}</p></td>
 
                       <td className="px-6 py-3.5 text-right space-x-1 whitespace-nowrap">
                         <button
@@ -1026,8 +1026,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       type="number"
                       min="0"
                       max="100"
-                      value={formData.attendancePercentage !== undefined ? formData.attendancePercentage : 95}
-                      onChange={(e) => setFormData({ ...formData, attendancePercentage: parseInt(e.target.value) || 0 })}
                       className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none font-medium"
                     />
                   </div>
@@ -1128,8 +1126,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <label className="block mb-1 font-bold text-slate-800">Hostel Status</label>
                     <input
                       type="text"
-                      value={formData.hostelStatus || ''}
-                      onChange={(e) => setFormData({ ...formData, hostelStatus: e.target.value })}
                       placeholder="e.g. Block A, Room 101"
                       className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#005E38] focus:outline-none"
                     />
@@ -1262,11 +1258,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Hostel</span>
-                <span className="font-bold text-slate-800">{viewingStudent.hostelStatus}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Stipend</span>
-                <span className="font-bold text-emerald-700">{viewingStudent.stipendStatus}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Blood Group</span>

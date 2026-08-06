@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationPage, Course, DownloadItem, GalleryItem, NoticeItem, StudentProfile } from './types';
-import { DEMO_STUDENTS, COURSES, DOWNLOADS_LIST } from './data/mockData';
+import { COURSES, DOWNLOADS_LIST } from './data/mockData';
 import { supabase, getStudentProfileFromSupabase, saveStudentProfileToSupabase } from './lib/supabase';
 import { secureStorage } from './lib/security';
 import { NoticeTicker } from './components/NoticeTicker';
@@ -79,10 +79,7 @@ export default function App() {
             batchYear: '2026 - 2027',
             photoUrl: u.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
             bloodGroup: 'B +ve',
-            attendancePercentage: 92,
             cgpa: '8.80 / 10',
-            hostelStatus: 'Block A, Room 102',
-            stipendStatus: 'Active (Rs. 1,500/Month)',
             semester: 'Semester I'
           };
           await saveStudentProfileToSupabase(student);

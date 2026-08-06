@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StudentProfile } from '../types';
-import { DEMO_STUDENTS } from '../data/mockData';
+
 import { generateRollNoSlipPDF } from '../lib/pdfGenerator';
 import { getStudentProfileFromSupabase } from '../lib/supabase';
 import { 
@@ -64,7 +64,7 @@ export const RollNoSlipModal: React.FC<RollNoSlipModalProps> = ({ onClose, logge
         if (!targetStudent) {
           const localStr = localStorage.getItem('etc_registered_students');
           const localList: StudentProfile[] = localStr ? JSON.parse(localStr) : [];
-          const combined = [...DEMO_STUDENTS, ...localList];
+          const combined = [...localList];
           
           const cleanQuery = rollNo.trim().toLowerCase();
           targetStudent = combined.find(

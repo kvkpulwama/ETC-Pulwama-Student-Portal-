@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StudentProfile, NavigationPage } from '../types';
-import { DEMO_STUDENTS, COURSES } from '../data/mockData';
+import { COURSES } from '../data/mockData';
 import { supabase, activeSupabaseUrl, DEFAULT_SUPABASE_URL, getStudentProfileFromSupabase, saveStudentProfileToSupabase } from '../lib/supabase';
 import { sanitizeInput } from '../lib/security';
 import { 
@@ -137,10 +137,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
           batchYear: '2026 - 2027',
           photoUrl: '/prof-mugloo.png',
           bloodGroup: 'O +ve',
-          attendancePercentage: 96,
           cgpa: '9.10 / 10',
-          hostelStatus: 'Day Scholar (Pulwama)',
-          stipendStatus: 'Active (Rs. 1,500/Month)',
           semester: 'Semester I'
         };
         await saveStudentProfileToSupabase(student);
@@ -151,7 +148,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
       const defaultGoogleEmail = "pcpulwama@gmail.com";
       let student = await getStudentProfileFromSupabase(defaultGoogleEmail);
       if (!student) {
-        student = DEMO_STUDENTS[0];
+        student = null;
       }
       onLoginSuccess(student);
     } finally {
@@ -197,10 +194,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
               batchYear: '2026 - 2027',
               photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
               bloodGroup: 'B +ve',
-              attendancePercentage: 90,
               cgpa: '8.50 / 10',
-              hostelStatus: 'Block A, Room 102',
-              stipendStatus: 'Active (Rs. 1,500/Month)',
               semester: 'Semester I'
             };
             await saveStudentProfileToSupabase(student);
@@ -217,7 +211,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
       if (!student) {
         const existingStudentsStr = typeof window !== 'undefined' ? localStorage.getItem('etc_registered_students') : null;
         const registeredList: StudentProfile[] = existingStudentsStr ? JSON.parse(existingStudentsStr) : [];
-        const allStudents = [...DEMO_STUDENTS, ...registeredList];
+        const allStudents = [...registeredList];
 
         const found = allStudents.find(
           (s) =>
@@ -259,10 +253,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
             batchYear: '2026 - 2027',
             photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
             bloodGroup: 'B +ve',
-            attendancePercentage: 90,
             cgpa: 'Enrolled',
-            hostelStatus: 'Block A',
-            stipendStatus: 'Active (Rs. 1,500/Month)',
             semester: 'Semester I'
           };
           await saveStudentProfileToSupabase(customNewStudent);
@@ -366,10 +357,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
         batchYear: regSession || '2026 - 2027',
         photoUrl: regPhotoBase64,
         bloodGroup: 'A +ve',
-        attendancePercentage: 100,
         cgpa: 'Enrolled (Semester I)',
-        hostelStatus: 'Under Verification',
-        stipendStatus: 'Active (Rs. 1,500/Month)',
         semester: 'Semester I'
       };
 

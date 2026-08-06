@@ -508,53 +508,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   }
 ];
 
-export const DEMO_STUDENTS: StudentProfile[] = [
-  {
-    id: 's-101',
-    rollNumber: 'ETC/2025/BHT-042',
-    registrationNumber: 'JK-ETC-2025-0842',
-    name: 'Aamir Ahmad Bhat',
-    email: 'aamir.bhat@student.etcpulwama.edu',
-    phone: '+91 9797 123456',
-    guardianName: 'Mohammad Yusuf Bhat',
-    dateOfBirth: '14/08/2003',
-    gender: 'Male',
-    address: 'Village Tahab, District Pulwama, J&K - 192301',
-    courseId: 'bht-101',
-    courseTitle: 'Basic Horticulture Training Course (BHT)',
-    batchYear: '2025 - 2026',
-    photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-    bloodGroup: 'B +ve',
-    attendancePercentage: 92,
-    cgpa: '8.75 / 10',
-    hostelStatus: 'Block A, Room 204 (Boys Hostel)',
-    stipendStatus: 'Active (Rs. 1,500/Month Credited till June 2026)',
-    semester: 'Semester II'
-  },
-  {
-    id: 's-102',
-    rollNumber: 'ETC/2025/BAT-018',
-    registrationNumber: 'JK-ETC-2025-0918',
-    name: 'Insha Jan',
-    email: 'insha.jan@student.etcpulwama.edu',
-    phone: '+91 9906 887766',
-    guardianName: 'Ghulam Rasool Shah',
-    dateOfBirth: '05/03/2004',
-    gender: 'Female',
-    address: 'Koil, District Pulwama, J&K - 192301',
-    courseId: 'bat-102',
-    courseTitle: 'Basic Agriculture Training Course (BAT)',
-    batchYear: '2025 - 2026',
-    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
-    bloodGroup: 'O +ve',
-    attendancePercentage: 88,
-    cgpa: '8.40 / 10',
-    hostelStatus: 'Day Scholar (Local Transport)',
-    stipendStatus: 'Active (Rs. 1,500/Month Credited till June 2026)',
-    semester: 'Semester II'
-  }
-];
-
+export const DEMO_STUDENTS: StudentProfile[] = [];
 export const DEMO_MARKS: Record<string, StudentMark[]> = {
   'ETC/2025/BHT-042': [
     { subjectCode: 'BHT-11', subjectName: 'Principles of Temperate Fruit Production', maxMarks: 100, obtainedMarks: 88, grade: 'A+', status: 'Pass' },

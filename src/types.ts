@@ -92,12 +92,9 @@ export interface StudentProfile {
   enrollmentDate?: string;
   status?: string;
   semester?: string;
-  attendancePercentage?: number;
   photoUrl?: string;
   bloodGroup?: string;
   cgpa?: string;
-  hostelStatus?: string;
-  stipendStatus?: string;
 }
 
 export interface StudentMark {

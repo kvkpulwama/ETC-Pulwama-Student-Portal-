@@ -123,9 +123,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           { id: 'overview', label: 'Overview & Stats', icon: <HomeIcon className="w-4 h-4" /> },
           { id: 'idcard', label: 'Digital Student ID', icon: <ShieldCheck className="w-4 h-4 text-amber-600" /> },
           { id: 'marksheet', label: 'Marksheet & Grades', icon: <Award className="w-4 h-4" /> },
-          { id: 'timetable', label: 'Timetable & Attendance', icon: <Calendar className="w-4 h-4" /> },
+          { id: "timetable", label: "Timetable", icon: <Calendar className="w-4 h-4" /> },
           { id: 'assignments', label: 'Assignments & Notes', icon: <FileText className="w-4 h-4" /> },
-          { id: 'hostel', label: 'Hostel Allocation', icon: <Building className="w-4 h-4" /> }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -145,35 +144,14 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
       {/* Tab 1: Overview */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          {/* Quick Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Attendance Record
-              </span>
-              <p className="text-2xl font-black text-emerald-800">{student.attendancePercentage}%</p>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
-                <div
-                  className="bg-emerald-600 h-full rounded-full"
-                  style={{ width: `${student.attendancePercentage}%` }}
-                ></div>
-              </div>
-            </div>
-
+                    {/* Quick Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Academic Performance
               </span>
               <p className="text-2xl font-black text-slate-900">{student.cgpa}</p>
               <p className="text-[11px] text-emerald-700 font-semibold">Sem I & II Score</p>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Hostel Allocation
-              </span>
-              <p className="text-xs font-bold text-slate-900">{student.hostelStatus}</p>
-              <p className="text-[11px] text-emerald-700 font-semibold">ETC Boys/Girls Hostel</p>
             </div>
           </div>
 
@@ -318,9 +296,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               <h3 className="font-extrabold text-lg text-slate-900">Weekly Schedule & Field Practicals</h3>
               <p className="text-xs text-slate-500">Lectures, laboratory exercises, and orchard field work schedule.</p>
             </div>
-            <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
-              Attendance: {student.attendancePercentage}%
-            </span>
+            
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -385,47 +361,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
         </div>
       )}
 
-      {/* Tab 6: Hostel & Stipend */}
-      {activeTab === 'stipend' && (
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-          <div className="border-b border-slate-200 pb-4">
-            <h3 className="font-extrabold text-lg text-slate-900">Government Stipend & Hostel Allocation</h3>
-            <p className="text-xs text-slate-500">Monthly Rs. 1,500 government stipend disbursement log and hostel details.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-5 bg-emerald-50/80 rounded-2xl border border-emerald-200 space-y-3">
-              <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-sm">
-                <DollarSign className="w-5 h-5 text-emerald-700" />
-                <span>Monthly Stipend Tracker</span>
-              </div>
-              <p className="text-xs text-slate-700 leading-relaxed">
-                As an enrolled trainee in government-recognized BHT/BAT diploma courses, you are entitled to a monthly stipend of <strong>Rs. 1,500</strong> directly credited into your DBT bank account.
-              </p>
-              <div className="bg-white p-3 rounded-xl border border-emerald-200 text-xs font-mono font-bold text-emerald-950 space-y-1">
-                <p>Q1 Stipend: <span className="text-emerald-700">Disbursed (Rs. 4,500)</span></p>
-                <p>Q2 Stipend: <span className="text-emerald-700">Disbursed (Rs. 4,500)</span></p>
-                <p>Q3 Stipend: <span className="text-amber-700">In Processing</span></p>
-              </div>
-            </div>
-
-            <div className="p-5 bg-amber-50/80 rounded-2xl border border-amber-200 space-y-3">
-              <div className="flex items-center gap-2 text-amber-950 font-extrabold text-sm">
-                <Building className="w-5 h-5 text-amber-700" />
-                <span>Hostel Accommodation Status</span>
-              </div>
-              <p className="text-xs text-slate-700 leading-relaxed">
-                Residential hostel details at ETC Pulwama campus:
-              </p>
-              <div className="bg-white p-3 rounded-xl border border-amber-200 text-xs font-medium text-slate-800 space-y-1">
-                <p>Block: <strong>{student.hostelStatus}</strong></p>
-                <p>Mess Clearance: <strong>Verified</strong></p>
-                <p>Warden Helpline: <strong>+91 1933 262245</strong></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showRollNoModal && (
         <RollNoSlipModal onClose={() => setShowRollNoModal(false)} loggedInStudent={student} />

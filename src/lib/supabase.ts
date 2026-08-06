@@ -116,10 +116,7 @@ export async function fetchStudentsFromSupabase(): Promise<any[]> {
       semester: row.semester || 'Semester I',
       photoUrl: row.photo_url || row.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
       bloodGroup: row.blood_group || row.bloodGroup || 'B +ve',
-      attendancePercentage: row.attendance_percentage || row.attendancePercentage || 100,
       cgpa: row.cgpa || 'Enrolled (Semester I)',
-      hostelStatus: row.hostel_status || row.hostelStatus || 'Under Verification',
-      stipendStatus: row.stipend_status || row.stipendStatus || 'Active (Rs. 1,500/Month)'
     }));
   } catch (e) {
     console.warn('Supabase fetch students error:', e);
@@ -187,10 +184,7 @@ export async function getStudentProfileFromSupabase(identifier: string) {
         semester: data.semester || 'Semester I',
         photoUrl: data.photo_url || data.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
         bloodGroup: data.blood_group || data.bloodGroup || 'B +ve',
-        attendancePercentage: data.attendance_percentage || data.attendancePercentage || 92,
         cgpa: data.cgpa || '8.80 / 10',
-        hostelStatus: data.hostel_status || data.hostelStatus || 'Block A, Room 102',
-        stipendStatus: data.stipend_status || data.stipendStatus || 'Active (Rs. 1,500/Month)'
       };
     }
   } catch (e) {
@@ -253,21 +247,15 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       guardian_name: student.guardianName,
       date_of_birth: student.dateOfBirth,
       gender: student.gender,
-      qualification: student.qualification || '',
       district: student.district || '',
       address: student.address,
       course_id: student.courseId,
       course_title: student.courseTitle,
       batch_year: student.batchYear,
-      enrollment_date: student.enrollmentDate,
-      status: student.status,
       semester: student.semester,
-      attendance_percentage: student.attendancePercentage,
       photo_url: compactPhoto,
       blood_group: student.bloodGroup,
       cgpa: student.cgpa,
-      hostel_status: student.hostelStatus,
-      stipend_status: student.stipendStatus
     };
 
     // Primary upsert
@@ -291,7 +279,6 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
         email: student.email,
         phone: student.phone,
         guardian_name: student.guardianName,
-        qualification: student.qualification || '',
         course_id: student.courseId,
         course_title: student.courseTitle,
         batch_year: student.batchYear,
