@@ -7,8 +7,8 @@ const storedKey = typeof window !== 'undefined' ? localStorage.getItem('etc_supa
 export const DEFAULT_SUPABASE_URL = 'https://ssypyegksjrpjgbcoqyc.supabase.co';
 export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_P19UWTAtI4Ujeg9HrYohqA_s6podg89';
 
-export const activeSupabaseUrl = storedUrl || DEFAULT_SUPABASE_URL;
-export const activeSupabaseKey = storedKey || DEFAULT_SUPABASE_ANON_KEY;
+export const activeSupabaseUrl = storedUrl || import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+export const activeSupabaseKey = storedKey || import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 export let supabase: SupabaseClient = createClient(activeSupabaseUrl, activeSupabaseKey);
 
@@ -20,8 +20,8 @@ export function updateSupabaseConfig(url: string, key: string) {
     if (key) localStorage.setItem('etc_supabase_key', key.trim());
     else localStorage.removeItem('etc_supabase_key');
   }
-  const newUrl = url.trim() || DEFAULT_SUPABASE_URL;
-  const newKey = key.trim() || DEFAULT_SUPABASE_ANON_KEY;
+  const newUrl = url.trim() || import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const newKey = key.trim() || import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
   supabase = createClient(newUrl, newKey);
 }
 
@@ -249,6 +249,9 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       gender: student.gender,
       district: student.district || '',
       address: student.address,
+      qualification: student.qualification,
+      enrollment_date: student.enrollmentDate,
+      status: student.status,
       course_id: student.courseId,
       course_title: student.courseTitle,
       batch_year: student.batchYear,

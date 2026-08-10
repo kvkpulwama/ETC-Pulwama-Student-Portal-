@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-lg border-2 border-emerald-600 flex items-center justify-center overflow-hidden group-hover:scale-105 group-hover:border-amber-400 transition-all">
               <img 
-                src="/skuast-logo-final.png" 
+                src="/skuast-logo-final.jpg" 
                 alt="SKUAST-K Emblem Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"

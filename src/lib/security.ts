@@ -148,6 +148,9 @@ CREATE TABLE IF NOT EXISTS public.students (
   semester TEXT DEFAULT 'Semester I',
   gender TEXT DEFAULT 'Male',
   date_of_birth TEXT DEFAULT '2004-01-01',
+  qualification TEXT,
+  enrollment_date TEXT,
+  status TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

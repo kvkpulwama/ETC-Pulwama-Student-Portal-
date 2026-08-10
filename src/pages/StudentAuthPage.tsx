@@ -362,7 +362,10 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
       };
 
       // 2. Save Student Profile in Supabase
-      await saveStudentProfileToSupabase(newStudent);
+      const saveRes = await saveStudentProfileToSupabase(newStudent);
+      if (!saveRes.success && saveRes.error !== 'Record saved locally') {
+        console.warn('Supabase Sync Failed:', saveRes.error);
+      }
 
       // Save local backup cache
       const existingStudentsStr = localStorage.getItem('etc_registered_students');
@@ -370,7 +373,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
       registeredList.push(newStudent);
       localStorage.setItem('etc_registered_students', JSON.stringify(registeredList));
 
-      setRegSuccessMsg(`Supabase Account Registration Successful! Assigned Roll No: ${formattedRoll}`);
+      setRegSuccessMsg(saveRes.success && saveRes.data ? `Supabase Account Registration Successful! Assigned Roll No: ${formattedRoll}` : `Offline Registration Successful (Supabase Sync Failed). Assigned Roll No: ${formattedRoll}`);
       setTimeout(() => {
         onLoginSuccess(newStudent);
       }, 1000);

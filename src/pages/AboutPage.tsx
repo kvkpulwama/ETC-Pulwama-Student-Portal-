@@ -91,7 +91,7 @@ export const AboutPage: React.FC = () => {
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
             <span className="text-emerald-700 font-bold text-xs uppercase block">Academic Collaboration</span>
             <div className="flex items-center gap-2">
-              <img src="/skuast-logo-final.png" alt="SKUAST" className="w-7 h-7 object-contain" referrerPolicy="no-referrer" />
+              <img src="/skuast-logo-final.jpg" alt="SKUAST" className="w-7 h-7 object-contain" referrerPolicy="no-referrer" />
               <img src="/icar-logo-final.jpg" alt="ICAR" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
               <p className="font-extrabold text-slate-900 text-xs">SKUAST-K & ICAR Extension Guidelines</p>
             </div>

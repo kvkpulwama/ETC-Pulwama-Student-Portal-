@@ -26,25 +26,19 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-12 pb-16 bg-slate-50 min-h-screen">
       {/* Hero Section */}
-      <section className="relative text-white pt-16 pb-24 px-4 sm:px-8 bg-[#005E38] overflow-hidden">
+      <section className="relative text-white pt-24 pb-32 px-4 sm:px-8 overflow-hidden min-h-[500px] flex items-center justify-center">
         {/* Background Pattern */}
-        <div className="absolute inset-0 z-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=1600&q=80')] bg-cover mix-blend-overlay"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/campus_banner_kashmir.jpg')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#005E38]/80 to-slate-900/90"></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center space-y-6">
+        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center space-y-6">
           
 
-          <div className="inline-flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-widest bg-emerald-950/50 px-4 py-2 rounded-full border border-emerald-600/50 backdrop-blur-sm">
-            <span>LEARN • GROW • LEAD 2026</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl font-serif font-black tracking-tight leading-[1.1] max-w-3xl">
-            Welcome to <br />
-            <span className="text-amber-400">Extension Training Centre</span>
+          <h1 className="text-4xl sm:text-6xl font-serif font-black tracking-tight leading-[1.1] max-w-3xl text-white py-12">
+            LEARN • GROW • LEAD
           </h1>
 
-          <p className="text-sm sm:text-base text-emerald-100 max-w-xl font-medium leading-relaxed">
-            Your centralized portal for course materials, academic updates, learning resources, and everything you need for student success at Malangpora Pulwama.
-          </p>
+          
 
           <div className="flex flex-wrap justify-center items-center gap-4 pt-4">
             <button
