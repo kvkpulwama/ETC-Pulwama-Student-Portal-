@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="100%" height="100%">
+  <!-- Dr. Javeed Mugloo Signature vector based on user attachment -->
+  <g fill="none" stroke="#252468" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main cursive J loop rising high with starting dot -->
+    <circle cx="140" cy="46" r="3.5" fill="#252468" stroke="none" />
+    <!-- Downward stem loop -->
+    <path d="M 140 48 L 156 128 C 158 135, 153 140, 149 130 C 145 110, 138 90, 8 116 C 50 114, 120 100, 166 94" />
+    <!-- Second tall vertical stem stroke -->
+    <circle cx="180" cy="65" r="3.5" fill="#252468" stroke="none" />
+    <path d="M 179 67 L 173 138" />
+    <!-- Flourish loops (aveed) -->
+    <path d="M 190 92 C 194 88, 198 84, 204 88 C 210 93, 215 90, 222 84 C 228 80, 236 86, 244 88" />
+    <!-- Base horizontal underscore line sweeping all the way to right -->
+    <path d="M 182 108 L 395 92" />
+  </g>
+</svg>

@@ -3,6 +3,7 @@ import { StudentProfile, NavigationPage, StudentMark } from '../types';
 import { DEMO_MARKS, DEMO_ASSIGNMENTS, DEMO_TIMETABLE } from '../data/mockData';
 import { StudentIdCard } from '../components/StudentIdCard';
 import { RollNoSlipModal } from '../components/RollNoSlipModal';
+import { CertificateModal } from '../components/CertificateModal';
 import { 
   UserCircle, 
   Award, 
@@ -38,6 +39,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   >('overview');
 
   const [showRollNoModal, setShowRollNoModal] = useState(false);
+  const [showCertModal, setShowCertModal] = useState(false);
   const [assignmentSubmitted, setAssignmentSubmitted] = useState<Record<string, boolean>>({});
 
   const marksList: StudentMark[] = DEMO_MARKS[student.rollNumber] || [
@@ -89,19 +91,28 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
         </div>
 
         {/* Header Actions */}
-        <div className="flex flex-wrap items-center gap-3 shrink-0 w-full md:w-auto justify-end border-t md:border-t-0 border-emerald-800/80 pt-4 md:pt-0">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full md:w-auto justify-end border-t md:border-t-0 border-emerald-800/80 pt-4 md:pt-0">
+          <button
+            onClick={() => setShowCertModal(true)}
+            className="px-4 py-2.5 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 border border-amber-300 hover:scale-105"
+            title="Download official Course Completion Certificate"
+          >
+            <Award className="w-4 h-4 text-slate-950" />
+            <span>Download Certificate</span>
+          </button>
+
           <button
             onClick={() => setShowRollNoModal(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-black text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 border border-amber-300 hover:scale-105"
+            className="px-3.5 py-2.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow border border-emerald-600 flex items-center gap-1.5"
             title="Download official Examination Hall Ticket PDF"
           >
-            <Download className="w-4 h-4 text-slate-950" />
-            <span>Roll No. Slip PDF</span>
+            <Download className="w-4 h-4 text-amber-300" />
+            <span>Roll No. Slip</span>
           </button>
 
           <button
             onClick={() => setActiveTab('idcard')}
-            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all border border-white/20 flex items-center gap-1.5"
+            className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all border border-white/20 flex items-center gap-1.5"
           >
             <Printer className="w-4 h-4 text-amber-300" />
             <span>Digital ID</span>
@@ -109,7 +120,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
           <button
             onClick={onLogout}
-            className="px-4 py-2.5 bg-emerald-950 hover:bg-emerald-900 text-red-300 hover:text-red-200 font-bold text-xs rounded-xl border border-red-900/50 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2.5 bg-emerald-950 hover:bg-emerald-900 text-red-300 hover:text-red-200 font-bold text-xs rounded-xl border border-red-900/50 transition-colors flex items-center gap-1.5"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -364,6 +375,14 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
       {showRollNoModal && (
         <RollNoSlipModal onClose={() => setShowRollNoModal(false)} loggedInStudent={student} />
+      )}
+
+      {showCertModal && (
+        <CertificateModal 
+          initialCourse={student.courseId?.toLowerCase().includes('bat') ? 'BAT' : 'BHT'}
+          onClose={() => setShowCertModal(false)} 
+          loggedInStudent={student} 
+        />
       )}
     </div>
   );

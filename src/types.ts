@@ -135,3 +135,20 @@ export interface ContactQuery {
   createdAt: string;
   trackingCode: string;
 }
+
+export interface CertificateData {
+  regdNo: string;
+  srNo: string;
+  candidateName: string;
+  genderPrefix: string;
+  parentage: string;
+  relationType: string;
+  residence: string;
+  district: string;
+  courseCode: 'BHT' | 'BAT';
+  courseName: string;
+  session: string;
+  division: string;
+  dateOfIssue: string;
+  verificationCode?: string;
+}

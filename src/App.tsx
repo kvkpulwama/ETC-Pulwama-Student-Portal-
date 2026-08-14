@@ -194,6 +194,7 @@ export default function App() {
         {currentPage === 'downloads' && (
           <DownloadsPage
             onPreviewDocument={(doc) => setActiveDocModal(doc)}
+            loggedInStudent={loggedInStudent}
           />
         )}
 

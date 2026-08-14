@@ -430,6 +430,28 @@ export const DOWNLOADS_LIST: DownloadItem[] = [
     downloadsCount: 930,
     description: 'Requisition form for issuing monthly stipend clearance and official course completion/character certificates.',
     contentPreview: 'OFFICE OF THE PRINCIPAL, EXTENSION TRAINING CENTRE PULWAMA\nREQUISITION FOR STIPEND CLEARANCE & CERTIFICATE ISSUANCE\n\nStudent Name: ______________________________\nRoll No: __________________ Course: __________ Batch: _____\nLibrary Clearance: [ ] Verified  Hostel Clearance: [ ] Verified\nField Training Completion: [ ] Verified\n\nSignature of Course Director: ___________________'
+  },
+  {
+    id: 'd-cert-bht',
+    title: 'Download Certificate - Basic Horticulture Training Course (BHT)',
+    category: 'Certificates & Requests',
+    fileType: 'PDF',
+    fileSize: '1.8 MB',
+    uploadDate: '01 August 2026',
+    downloadsCount: 3450,
+    description: 'Official 1-Year BHT Course Completion Certificate issued by SKUAST-K Directorate of Extension / ETC Pulwama including Candidate Name, Parentage, Residence, District, Session, Division, Date, and Official Signatures.',
+    contentPreview: 'SHER-E-KASHMIR UNIVERSITY OF AGRICULTURAL SCIENCES & TECHNOLOGY OF KASHMIR\nDirectorate of Extension\nExtension Training Centre / Krishi Vigyan Kendra, Pulwama\n\nCERTIFICATE\n\nThis is to certify that Shri/Smt. [CANDIDATE NAME] Son/Daughter of [PARENTAGE] R/o. [ADDRESS/RESIDENCE] District [DISTRICT] has been declared successful in One Year Basic Horticulture Training Course, Session [SESSION] in [DIVISION] Division.\n\nDate of issue: [DATE]\nSignatures: Checked by (I/c Academics) | Secretary (Board of Examination) | Chairman (Director Extension)'
+  },
+  {
+    id: 'd-cert-bat',
+    title: 'Download Certificate - Basic Agriculture Training Course (BAT)',
+    category: 'Certificates & Requests',
+    fileType: 'PDF',
+    fileSize: '1.8 MB',
+    uploadDate: '01 August 2026',
+    downloadsCount: 2980,
+    description: 'Official 1-Year BAT Course Completion Certificate issued by SKUAST-K Directorate of Extension / ETC Pulwama including Candidate Name, Parentage, Residence, District, Session, Division, Date, and Official Signatures.',
+    contentPreview: 'SHER-E-KASHMIR UNIVERSITY OF AGRICULTURAL SCIENCES & TECHNOLOGY OF KASHMIR\nDirectorate of Extension\nExtension Training Centre / Krishi Vigyan Kendra, Pulwama\n\nCERTIFICATE\n\nThis is to certify that Shri/Smt. [CANDIDATE NAME] Son/Daughter of [PARENTAGE] R/o. [ADDRESS/RESIDENCE] District [DISTRICT] has been declared successful in One Year Basic Agriculture Training Course, Session [SESSION] in [DIVISION] Division.\n\nDate of issue: [DATE]\nSignatures: Checked by (I/c Academics) | Secretary (Board of Examination) | Chairman (Director Extension)'
   }
 ];
 
