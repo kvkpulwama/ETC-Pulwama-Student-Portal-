@@ -106,3 +106,60 @@
   50% { opacity: 0.85; transform: scale(1.02); }
 }
 
+/* Color Print Optimization for Certificates and ID Cards */
+@media print {
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* 1. Certificate Printing Optimization (Scoped to certificate mode) */
+  body.certificate-print-mode {
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fffdf8 !important;
+    overflow: hidden !important;
+  }
+
+  body.certificate-print-mode #skuast-certificate-container {
+    width: 287mm !important;
+    height: 198mm !important;
+    max-width: 287mm !important;
+    max-height: 198mm !important;
+    margin: 6mm auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 2. Official Trainee ID Card Print Isolation */
+  body.idcard-print-mode > *:not(#skuast-print-portal) {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.idcard-print-mode {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #skuast-print-portal {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+

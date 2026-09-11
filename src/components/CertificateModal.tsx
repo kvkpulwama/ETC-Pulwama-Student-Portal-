@@ -330,7 +330,10 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
   // Print
   const handlePrint = () => {
-    printCertificateElement();
+    const target =
+      certRef.current ||
+      (document.getElementById('skuast-certificate-container') as HTMLElement);
+    printCertificateElement(target);
   };
 
   return (
@@ -693,11 +696,21 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
                 </button>
 
                 <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
+                  {/* Print Button */}
+                  <button
+                    type="button"
+                    onClick={handlePrint}
+                    className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 border border-slate-300 shadow-sm"
+                  >
+                    <Printer className="w-4 h-4 text-emerald-800" />
+                    <span>Print (Color Landscape)</span>
+                  </button>
+
                   {/* Submit Button - Keeps user on same window and enables download */}
                   <button
                     type="button"
                     onClick={handleSubmitDetails}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border border-emerald-700 hover:scale-102 active:scale-98"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border border-emerald-700 hover:scale-102 active:scale-98"
                   >
                     <CheckCircle2 className="w-4 h-4 text-amber-300" />
                     <span>Submit</span>
@@ -708,7 +721,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
                     type="button"
                     onClick={handleDownloadPDF}
                     disabled={exportLoading}
-                    className={`w-full sm:w-auto px-6 py-2.5 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 border ${
+                    className={`w-full sm:w-auto px-5 py-2.5 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 border ${
                       isSubmitted
                         ? 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 border-amber-400 hover:scale-105 active:scale-95 ring-2 ring-emerald-600 ring-offset-1'
                         : 'bg-amber-300 hover:bg-amber-400 border-amber-400'

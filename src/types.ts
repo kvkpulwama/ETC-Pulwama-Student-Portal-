@@ -1,4 +1,4 @@
-export type NavigationPage = 'home' | 'about' | 'courses' | 'downloads' | 'gallery' | 'contact' | 'auth' | 'dashboard' | 'admin';
+export type NavigationPage = 'home' | 'about' | 'courses' | 'idcard' | 'downloads' | 'gallery' | 'contact' | 'auth' | 'dashboard' | 'admin';
 
 export interface Course {
   id: string;
@@ -95,6 +95,10 @@ export interface StudentProfile {
   photoUrl?: string;
   bloodGroup?: string;
   cgpa?: string;
+  division?: string;
+  validUpto?: string;
+  emergencyContact?: string;
+  designation?: string;
 }
 
 export interface StudentMark {

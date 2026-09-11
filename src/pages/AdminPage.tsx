@@ -362,6 +362,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     showToast(`Deleted student record for ${student.name}`);
   };
 
+  // Clear all registered students to keep fresh
+  const handleClearAllRegistrations = async () => {
+    if (!window.confirm("Are you sure you want to remove ALL registered students and keep the registration list completely fresh?")) {
+      return;
+    }
+    try {
+      localStorage.removeItem('etc_registered_students');
+      localStorage.removeItem('etc_my_student_icard');
+      try {
+        await supabase.from('students').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      } catch (e) {
+        console.warn('Supabase bulk delete notice:', e);
+      }
+      setStudents([]);
+      showToast("All registration data removed successfully. Registration list is now completely fresh.");
+    } catch (err) {
+      console.error('Clear registrations error:', err);
+    }
+  };
+
   // Sync / Push All Trainees to Supabase Cloud Database
   const [isSyncingSupabase, setIsSyncingSupabase] = useState(false);
   const handleSyncAllToSupabase = async () => {
@@ -732,6 +752,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               >
                 <FileSpreadsheet className="w-4 h-4 text-amber-400" />
                 <span className="hidden sm:inline">Export CSV</span>
+              </button>
+
+              <button
+                onClick={handleClearAllRegistrations}
+                className="px-3 py-2 bg-red-800 hover:bg-red-900 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
+                title="Remove all registered trainees and keep fresh"
+              >
+                <Trash2 className="w-4 h-4 text-red-200" />
+                <span className="hidden sm:inline">Clear All (Keep Fresh)</span>
               </button>
             </div>
           </div>

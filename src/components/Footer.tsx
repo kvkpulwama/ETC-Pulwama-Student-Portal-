@@ -81,6 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               { page: 'home', label: 'Home Page' },
               { page: 'about', label: 'About Institute' },
               { page: 'courses', label: 'Diploma Courses (BHT/BAT)' },
+              { page: 'idcard', label: 'Student I-Card (Digital Pass)' },
               { page: 'downloads', label: 'Downloads & Forms' },
               { page: 'gallery', label: 'Campus Orchard Gallery' },
               { page: 'contact', label: 'Helpdesk & Map' },

@@ -20,7 +20,8 @@ import {
   Printer, 
   Sparkles,
   ShieldCheck,
-  Building
+  Building,
+  IdCard
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -114,8 +115,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
             onClick={() => setActiveTab('idcard')}
             className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all border border-white/20 flex items-center gap-1.5"
           >
-            <Printer className="w-4 h-4 text-amber-300" />
-            <span>Digital ID</span>
+            <IdCard className="w-4 h-4 text-amber-300" />
+            <span>Student I-Card</span>
           </button>
 
           <button
@@ -132,7 +133,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
       <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-1.5 overflow-x-auto text-xs font-bold">
         {[
           { id: 'overview', label: 'Overview & Stats', icon: <HomeIcon className="w-4 h-4" /> },
-          { id: 'idcard', label: 'Digital Student ID', icon: <ShieldCheck className="w-4 h-4 text-amber-600" /> },
+          { id: 'idcard', label: 'Student I-Card', icon: <IdCard className="w-4 h-4 text-amber-600" /> },
           { id: 'marksheet', label: 'Marksheet & Grades', icon: <Award className="w-4 h-4" /> },
           { id: "timetable", label: "Timetable", icon: <Calendar className="w-4 h-4" /> },
           { id: 'assignments', label: 'Assignments & Notes', icon: <FileText className="w-4 h-4" /> },

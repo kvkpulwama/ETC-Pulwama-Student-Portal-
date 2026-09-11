@@ -19,10 +19,12 @@ import {
   Image as ImageIcon,
   Bell,
   Globe,
-  ShieldCheck
+  ShieldCheck,
+  IdCard
 } from 'lucide-react';
 import { NavigationPage, StudentProfile } from '../types';
 import { INSTITUTION_INFO, NOTICES } from '../data/mockData';
+import { SKUAST_LOGO_DATA_URI } from '../assets/logoBase64';
 
 
 
@@ -47,6 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'home', label: 'Home', icon: <Home className="w-3.5 h-3.5" /> },
     { id: 'about', label: 'About', icon: <Info className="w-3.5 h-3.5" /> },
     { id: 'courses', label: 'Courses', icon: <BookOpen className="w-3.5 h-3.5" /> },
+    { id: 'idcard', label: 'Student I-Card', icon: <IdCard className="w-3.5 h-3.5 text-amber-300" /> },
     { id: 'downloads', label: 'Downloads', icon: <Download className="w-3.5 h-3.5" /> },
     { id: 'gallery', label: 'Gallery', icon: <ImageIcon className="w-3.5 h-3.5" /> },
     { id: 'contact', label: 'Contact', icon: <PhoneCall className="w-3.5 h-3.5" /> }
@@ -90,10 +93,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* 2. Main Institutional White Banner with Modern Accents */}
+      {/* 2. Main Institutional White Banner with Modern Accents - SKUAST-K Official Logo */}
       <div className="bg-gradient-to-b from-white via-slate-50 to-emerald-50/20 py-4 px-4 sm:px-8 border-b border-slate-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          {/* Left SKUAST-K Emblem Logo */}
+          {/* Official SKUAST-K Emblem Logo */}
           <div 
             onClick={() => handleNavClick('home')}
             className="flex items-center gap-3 cursor-pointer shrink-0 group"
@@ -101,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-lg border-2 border-emerald-600 flex items-center justify-center overflow-hidden group-hover:scale-105 group-hover:border-amber-400 transition-all">
               <img 
-                src="/skuast-logo-final.jpg" 
+                src={SKUAST_LOGO_DATA_URI}
                 alt="SKUAST-K Emblem Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"
@@ -125,20 +128,8 @@ export const Header: React.FC<HeaderProps> = ({
             </p>
           </div>
 
-          {/* Right ICAR / Govt Emblem Logo */}
-          <div 
-            className="flex items-center gap-3 shrink-0 group"
-            title="Indian Council of Agricultural Research (ICAR)"
-          >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 border-2 border-emerald-600 shadow-lg flex items-center justify-center overflow-hidden group-hover:scale-105 group-hover:border-amber-400 transition-all">
-              <img 
-                src="/icar-logo-final.jpg" 
-                alt="ICAR Logo" 
-                className="w-full h-full object-contain p-0.5"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          </div>
+          {/* Right Spacer to preserve balanced institutional center alignment without ICAR logo */}
+          <div className="w-14 sm:w-16 shrink-0 hidden sm:block pointer-events-none opacity-0" aria-hidden="true" />
         </div>
       </div>
 
@@ -155,7 +146,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Desktop Links */}
-          <div className="hidden lg:flex items-center space-x-6 text-xs font-extrabold tracking-wide">
+          <div className="hidden lg:flex items-center space-x-3.5 xl:space-x-5 text-xs font-extrabold tracking-wide">
             {navItems.map((item) => {
               const isActive = currentPage === item.id;
               return (

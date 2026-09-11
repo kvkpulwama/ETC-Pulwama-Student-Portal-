@@ -50,7 +50,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
   const [regQualification, setRegQualification] = useState('10th');
   const [regDistrict, setRegDistrict] = useState('Pulwama');
   const [regSession, setRegSession] = useState('2026 - 2027');
-  const [regRollNo, setRegRollNo] = useState('BHT-2026-27-101');
+  const [regRollNo, setRegRollNo] = useState('');
   const [regPhotoBase64, setRegPhotoBase64] = useState<string>('');
   const [regPhotoError, setRegPhotoError] = useState<string>('');
   const [regPassword, setRegPassword] = useState('');
@@ -553,7 +553,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                     required
                     value={regPhone}
                     onChange={(e) => setRegPhone(e.target.value)}
-                    placeholder="+91 9797XXXXXX"
+                    placeholder=""
                     className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                   />
                 </div>
@@ -613,7 +613,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                       required
                       value={regRollNo}
                       onChange={(e) => setRegRollNo(e.target.value)}
-                      placeholder="Enter Roll No. (e.g. BHT-2026-27-101)"
+                      placeholder=""
                       className="w-full pl-8 pr-3.5 py-2 border border-slate-300 bg-white rounded-xl text-xs font-mono font-bold text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                     />
                   </div>

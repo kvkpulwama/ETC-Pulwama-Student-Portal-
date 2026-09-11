@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DownloadItem, StudentProfile } from '../types';
+import { DownloadItem, StudentProfile, NavigationPage } from '../types';
 import { DOWNLOADS_LIST } from '../data/mockData';
 import { RollNoSlipModal } from '../components/RollNoSlipModal';
 import { CertificateModal } from '../components/CertificateModal';
@@ -19,15 +19,17 @@ import {
   Apple,
   Stamp,
   Check,
-  ChevronRight
+  ChevronRight,
+  IdCard
 } from 'lucide-react';
 
 interface DownloadsPageProps {
   onPreviewDocument: (doc: DownloadItem) => void;
   loggedInStudent?: StudentProfile | null;
+  onNavigate?: (page: NavigationPage) => void;
 }
 
-export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument, loggedInStudent }) => {
+export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument, loggedInStudent, onNavigate }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showRollNoModal, setShowRollNoModal] = useState<boolean>(false);
@@ -226,6 +228,30 @@ export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument,
         >
           <FileCheck2 className="w-5 h-5 text-slate-950" />
           <span>Download Roll No. Slip PDF</span>
+        </button>
+      </div>
+
+      {/* Prominent Quick Access: Student Identity Card (Student I-Card) */}
+      <div className="bg-gradient-to-r from-emerald-950 via-[#03442e] to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-emerald-800 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 bg-emerald-900/80 text-amber-300 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider font-mono shadow-sm border border-emerald-700">
+            <IdCard className="w-3.5 h-3.5 text-amber-400" />
+            <span>STUDENT IDENTITY PASS</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Digital Student I-Card (Identity Pass)
+          </h2>
+          <p className="text-xs sm:text-sm font-normal text-emerald-100 max-w-xl">
+            View, verify, print, or download your official SKUAST-K Kashmir trainee identity card for campus entry, library access, and examination hall verification.
+          </p>
+        </div>
+
+        <button
+          onClick={() => onNavigate ? onNavigate('idcard') : window.location.href = '#'}
+          className="px-7 py-3.5 bg-white hover:bg-emerald-50 text-emerald-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-2xl transition-all shadow-xl flex items-center gap-2 shrink-0 border border-emerald-300 hover:scale-105 active:scale-95"
+        >
+          <IdCard className="w-5 h-5 text-emerald-800" />
+          <span>Open Student I-Card Portal</span>
         </button>
       </div>
 

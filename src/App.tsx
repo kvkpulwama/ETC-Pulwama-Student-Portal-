@@ -18,6 +18,7 @@ import { ContactPage } from './pages/ContactPage';
 import { StudentAuthPage } from './pages/StudentAuthPage';
 import { StudentDashboard } from './pages/StudentDashboard';
 import { AdminPage } from './pages/AdminPage';
+import { StudentIdCardPage } from './pages/StudentIdCardPage';
 import { Search, X, CheckCircle2, BookOpen, Download } from 'lucide-react';
 
 export default function App() {
@@ -191,10 +192,24 @@ export default function App() {
           />
         )}
 
+        {currentPage === 'idcard' && (
+          <StudentIdCardPage
+            loggedInStudent={loggedInStudent}
+            onNavigate={(page) => {
+              setCurrentPage(page);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
         {currentPage === 'downloads' && (
           <DownloadsPage
             onPreviewDocument={(doc) => setActiveDocModal(doc)}
             loggedInStudent={loggedInStudent}
+            onNavigate={(page) => {
+              setCurrentPage(page);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 
