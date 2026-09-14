@@ -22,6 +22,7 @@ import {
   downloadStudentIdCardImage,
   convertImageUrlToDataUri,
   printViaDocumentPortal,
+  printViaIframe,
   createPrintableBlobUrl,
   captureCardCanvas,
   CR80_CARD_WIDTH_MM,
@@ -350,10 +351,10 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/25 via-transparent to-black/30 pointer-events-none"></div>
 
         {/* Official SKUAST-K Kashmir Logo (Circular with thin white/gold ring) */}
-        <div className="w-[68px] h-[68px] rounded-full bg-white p-0.5 shadow-lg flex items-center justify-center overflow-hidden z-10 border-2 border-emerald-300/90 shrink-0">
+        <div className="w-[70px] h-[70px] rounded-full bg-white p-0.5 shadow-xl flex items-center justify-center overflow-hidden z-10 border-2 border-amber-300 shrink-0">
           <img
             src={SKUAST_LOGO_DATA_URI}
-            alt="SKUAST-Kashmir Logo"
+            alt="SKUAST Kashmir Logo"
             className="w-full h-full object-contain"
           />
         </div>
@@ -381,7 +382,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
               <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center text-slate-400">
                 <svg viewBox="0 0 100 115" className="w-20 h-24 text-slate-400 fill-current">
                   <circle cx="50" cy="40" r="24" />
-                  <path d="M 12 105 C 12 78, 30 68, 50 68 C 70 68, 88 105 Z" />
+                  <path d="M 12 105 C 12 78 30 68 50 68 C 70 68 88 105 88 105 Z" />
                 </svg>
               </div>
             )}
@@ -389,10 +390,20 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </div>
       </div>
 
-      {/* Bottom White Section (~55% height) */}
-      <div className="flex-1 bg-white pt-16 pb-3 px-7 flex flex-col justify-between relative">
+      {/* Bottom White Section (~55% height) with SKUAST Watermark Seal */}
+      <div className="flex-1 bg-white pt-16 pb-3 px-7 flex flex-col justify-between relative overflow-hidden">
+        {/* Official SKUAST Kashmir Security Emblem Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-[0.08] z-0">
+          <img
+            src={SKUAST_LOGO_DATA_URI}
+            alt=""
+            className="w-48 h-48 object-contain"
+            aria-hidden="true"
+          />
+        </div>
+
         {/* Candidate Name & Trainee Designation with Course Abbreviation */}
-        <div className="text-left space-y-0.5">
+        <div className="text-left space-y-0.5 relative z-10">
           <h3 className="font-extrabold text-slate-900 text-lg tracking-tight leading-tight">
             {student.name || 'STUDENT NAME'}
           </h3>
@@ -402,42 +413,42 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </div>
 
         {/* Detail Rows with Clean Colon Alignment */}
-        <div className="space-y-1.5 text-[13px] text-slate-900 font-semibold my-auto pt-1">
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Roll No.</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900 truncate font-mono">
+        <div className="space-y-1.5 text-[13px] text-slate-900 font-semibold my-auto pt-1 relative z-10">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Roll No.</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 font-mono text-[13px] leading-normal flex-1">
               {student.rollNumber || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Registration</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900 truncate font-mono text-xs">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Registration</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 font-mono text-[12px] leading-normal break-all flex-1">
               {student.registrationNumber || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Phone</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900 font-mono">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Phone</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 font-mono text-[13px] leading-normal flex-1">
               {student.phone || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Valid upto</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Valid upto</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 text-[13px] leading-normal flex-1">
               {formatValidUpto(student.validUpto)}
             </span>
           </div>
         </div>
 
         {/* Bottom Right: Head ETC Malangpora Pulwama Signature */}
-        <div className="flex justify-end items-end pt-1">
+        <div className="flex justify-end items-end pt-1 relative z-10">
           <div className="text-center w-36">
             <div className="h-9 w-full flex items-center justify-center">
               <HeadEtcSignature />
@@ -476,10 +487,10 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/35 pointer-events-none"></div>
 
         {/* Official SKUAST-K Kashmir Logo (Circular with thin white ring) */}
-        <div className="w-[64px] h-[64px] rounded-full bg-white p-0.5 shadow-lg flex items-center justify-center overflow-hidden z-10 border-2 border-emerald-300/80 mb-1.5 shrink-0">
+        <div className="w-[66px] h-[66px] rounded-full bg-white p-0.5 shadow-xl flex items-center justify-center overflow-hidden z-10 border-2 border-amber-300 mb-1.5 shrink-0">
           <img
             src={SKUAST_LOGO_DATA_URI}
-            alt="SKUAST-Kashmir Logo"
+            alt="SKUAST Kashmir Logo"
             className="w-full h-full object-contain"
           />
         </div>
@@ -488,7 +499,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         <h2 className="text-white font-black text-base tracking-wide uppercase leading-tight z-10 font-sans">
           Sher-e-Kashmir
         </h2>
-        <h3 className="text-white font-extrabold text-[12.5px] leading-snug z-10 mt-0.5 font-sans px-2">
+        <h3 className="text-amber-300 font-extrabold text-[12.5px] leading-snug z-10 mt-0.5 font-sans px-2">
           University of Agricultural Sciences &amp; Technology of Kashmir
         </h3>
         <p className="text-emerald-100 text-[11px] font-medium mt-1 z-10 tracking-wide font-sans">
@@ -496,47 +507,57 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </p>
       </div>
 
-      {/* Middle White Portion (~50% height) */}
-      <div className="flex-1 bg-white p-6 flex flex-col justify-center text-[13px] text-slate-900 font-semibold space-y-2.5">
+      {/* Middle White Portion (~50% height) with SKUAST Watermark Seal */}
+      <div className="flex-1 bg-white p-6 flex flex-col justify-center text-[13px] text-slate-900 font-semibold space-y-2.5 relative overflow-hidden">
+        {/* Official SKUAST Kashmir Security Emblem Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-[0.08] z-0">
+          <img
+            src={SKUAST_LOGO_DATA_URI}
+            alt=""
+            className="w-48 h-48 object-contain"
+            aria-hidden="true"
+          />
+        </div>
+
         {/* Primary Candidate Fields */}
-        <div className="space-y-1.5">
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Name</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-extrabold text-slate-900 truncate">
-              {student.name}
+        <div className="space-y-1.5 relative z-10">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Name</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-extrabold text-slate-900 text-[13px] leading-normal flex-1 break-words">
+              {student.name || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Father&apos;s Name</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900 truncate">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Father&apos;s Name</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 text-[13px] leading-normal flex-1 break-words">
               {student.guardianName || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Blood Group</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-black text-emerald-800">
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Blood Group</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-extrabold text-emerald-800 text-[13px] leading-normal flex-1">
               {student.bloodGroup || '—'}
             </span>
           </div>
 
-          <div className="flex items-center">
-            <span className="w-30 text-slate-700 font-bold">Division</span>
-            <span className="mr-2 text-slate-900 font-bold">:</span>
-            <span className="font-bold text-slate-900">
-              {student.division || 'ETC Malangpora Pulwama'}
+          <div className="flex items-start leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Division</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 text-[12.5px] leading-snug flex-1">
+              {student.division || 'Extension Training Centre (ETC) Malangpora Pulwama'}
             </span>
           </div>
         </div>
 
         {/* Address: EXACT permanent address entered by student */}
-        <div className="pt-2 border-t border-slate-100">
-          <div className="flex items-start">
-            <span className="w-30 text-slate-700 font-bold shrink-0">Address</span>
+        <div className="pt-2 border-t border-slate-100 relative z-10">
+          <div className="flex items-start leading-normal">
+            <span className="w-[110px] shrink-0 text-slate-700 font-bold shrink-0">Address</span>
             <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
             <div className="font-bold text-slate-900 leading-snug text-xs break-words flex-1">
               {student.address || '—'}
@@ -545,24 +566,33 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </div>
 
         {/* Emergency Contact No. */}
-        <div className="pt-1.5">
-          <p className="font-bold text-slate-900 text-xs">
-            Emergency Contact No.{' '}
-            <span className="font-mono font-black text-slate-950 ml-1">
+        <div className="pt-1.5 relative z-10">
+          <p className="font-bold text-slate-900 text-xs flex items-baseline leading-normal">
+            <span className="text-slate-700">Emergency Contact No.</span>
+            <span className="font-mono font-black text-slate-950 ml-2 text-xs">
               {student.emergencyContact || student.phone || '—'}
             </span>
           </p>
         </div>
       </div>
 
-      {/* Bottom Horticulture & Agriculture Green Strip: Updated Return Details */}
-      <div className="bg-[#2e7d32] text-white py-2.5 px-3 text-center border-t border-emerald-700 shrink-0">
-        <p className="text-[11.5px] font-black tracking-wide leading-tight">
-          If found please return to SKUAST-K ETC Malangpora Pulwama
-        </p>
-        <p className="text-[11px] font-bold tracking-wide text-amber-200 mt-0.5">
-          Head Office No. 01933-293294
-        </p>
+      {/* Bottom Horticulture & Agriculture Green Strip: Updated Return Details with SKUAST Logo */}
+      <div className="bg-[#2e7d32] text-white py-2 px-3 flex items-center justify-center gap-2.5 border-t border-emerald-700 shrink-0">
+        <div className="w-6 h-6 rounded-full bg-white p-0.5 shadow-xs flex items-center justify-center overflow-hidden shrink-0 border border-amber-300">
+          <img
+            src={SKUAST_LOGO_DATA_URI}
+            alt="SKUAST-K"
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <div className="text-center">
+          <p className="text-[11.5px] font-black tracking-wide leading-tight">
+            If found please return to SKUAST-K ETC Malangpora Pulwama
+          </p>
+          <p className="text-[11px] font-bold tracking-wide text-amber-200 mt-0.5">
+            Head Office No. 01933-293294
+          </p>
+        </div>
       </div>
     </div>
   );

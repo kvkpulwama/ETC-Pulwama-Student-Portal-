@@ -261,10 +261,7 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
             {/* Circular SKUAST-K Logo */}
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-md border-2 border-amber-300 shrink-0 flex items-center justify-center overflow-hidden">
               <img 
-                src="/SKUASTK_LOGO.png" 
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = SKUAST_LOGO_DATA_URI;
-                }}
+                src={SKUAST_LOGO_DATA_URI} 
                 alt="SKUAST-K Logo" 
                 className="w-full h-full object-contain"
               />

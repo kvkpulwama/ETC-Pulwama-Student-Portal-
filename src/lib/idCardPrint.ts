@@ -81,6 +81,76 @@ export async function convertImageUrlToDataUri(url: string): Promise<string> {
   });
 }
 
+// Color normalization helper to prevent html2canvas crashing on modern CSS oklch/oklab functions
+const colorCache = new Map<string, string>();
+let helperCanvas: HTMLCanvasElement | null = null;
+let helperCtx: CanvasRenderingContext2D | null = null;
+
+function convertCssColor(val: string): string {
+  if (!val || typeof val !== 'string') return val;
+  if (!val.includes('oklab') && !val.includes('oklch')) return val;
+
+  if (!helperCanvas && typeof document !== 'undefined') {
+    helperCanvas = document.createElement('canvas');
+    helperCanvas.width = 1;
+    helperCanvas.height = 1;
+    helperCtx = helperCanvas.getContext('2d', { willReadFrequently: true });
+  }
+
+  return val.replace(/(?:oklch|oklab)\([^)]+\)/g, (match) => {
+    if (colorCache.has(match)) return colorCache.get(match)!;
+    if (!helperCtx) return match;
+    try {
+      helperCtx.clearRect(0, 0, 1, 1);
+      helperCtx.fillStyle = match;
+      helperCtx.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = helperCtx.getImageData(0, 0, 1, 1).data;
+      const rgb = a === 255 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${+(a / 255).toFixed(3)})`;
+      colorCache.set(match, rgb);
+      return rgb;
+    } catch {
+      return match;
+    }
+  });
+}
+
+function patchWindowComputedStyle(win: Window | null): () => void {
+  if (!win || !win.getComputedStyle) return () => {};
+  const orig = win.getComputedStyle;
+  try {
+    win.getComputedStyle = function (elt: Element, pseudoElt?: string | null) {
+      const cs = orig.call(win, elt, pseudoElt);
+      return new Proxy(cs, {
+        get(target, prop) {
+          if (prop === 'getPropertyValue') {
+            return (propName: string) => {
+              const res = target.getPropertyValue(propName);
+              return typeof res === 'string' && (res.includes('oklab') || res.includes('oklch'))
+                ? convertCssColor(res)
+                : res;
+            };
+          }
+          const val = (target as any)[prop];
+          if (typeof val === 'string' && (val.includes('oklab') || val.includes('oklch'))) {
+            return convertCssColor(val);
+          }
+          if (typeof val === 'function') {
+            return val.bind(target);
+          }
+          return val;
+        }
+      });
+    };
+  } catch (e) {
+    console.warn('Could not patch getComputedStyle:', e);
+  }
+  return () => {
+    try {
+      win.getComputedStyle = orig;
+    } catch (_) {}
+  };
+}
+
 /**
  * Captures an HTML ID card element into an HTMLCanvasElement at high DPI (scale 2.5)
  * with robust CORS handling, visible element assurance, and image pre-loading.
@@ -110,34 +180,43 @@ export async function captureCardCanvas(element: HTMLElement): Promise<HTMLCanva
   const width = rect.width > 0 ? rect.width : 350;
   const height = rect.height > 0 ? rect.height : 555;
 
-  return await html2canvas(element, {
-    scale: 2.5, // 300+ DPI equivalent for standard card dimensions
-    useCORS: true,
-    allowTaint: false, // Prevents canvas from being tainted so toDataURL never throws SecurityError
-    backgroundColor: '#ffffff',
-    logging: false,
-    imageTimeout: 8000,
-    width,
-    height,
-    onclone: (_clonedDoc, clonedEl) => {
-      if (clonedEl) {
-        clonedEl.style.opacity = '1';
-        clonedEl.style.visibility = 'visible';
-        clonedEl.style.display = 'flex';
-        clonedEl.style.position = 'relative';
-        clonedEl.style.transform = 'none';
+  const unwrapMain = patchWindowComputedStyle(typeof window !== 'undefined' ? window : null);
 
-        // Ensure parent containers in the clone do not hide or clip the element
-        let parent = clonedEl.parentElement;
-        while (parent && parent !== _clonedDoc.body) {
-          parent.style.opacity = '1';
-          parent.style.visibility = 'visible';
-          parent.style.overflow = 'visible';
-          parent = parent.parentElement;
+  try {
+    return await html2canvas(element, {
+      scale: 2.5, // 300+ DPI equivalent for standard card dimensions
+      useCORS: true,
+      allowTaint: false, // Prevents canvas from being tainted so toDataURL never throws SecurityError
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 8000,
+      width,
+      height,
+      onclone: (_clonedDoc, clonedEl) => {
+        if (_clonedDoc.defaultView) {
+          patchWindowComputedStyle(_clonedDoc.defaultView);
+        }
+        if (clonedEl) {
+          clonedEl.style.opacity = '1';
+          clonedEl.style.visibility = 'visible';
+          clonedEl.style.display = 'flex';
+          clonedEl.style.position = 'relative';
+          clonedEl.style.transform = 'none';
+
+          // Ensure parent containers in the clone do not hide or clip the element
+          let parent = clonedEl.parentElement;
+          while (parent && parent !== _clonedDoc.body) {
+            parent.style.opacity = '1';
+            parent.style.visibility = 'visible';
+            parent.style.overflow = 'visible';
+            parent = parent.parentElement;
+          }
         }
       }
-    }
-  });
+    });
+  } finally {
+    unwrapMain();
+  }
 }
 
 export interface PdfDownloadResult {
