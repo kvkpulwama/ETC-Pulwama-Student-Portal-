@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import QRCode from 'qrcode';
 import { StudentProfile } from '../types';
 import { 
   Printer, 
@@ -96,13 +97,13 @@ const HeadEtcSignature: React.FC = () => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
     viewBox="0 0 400 160" 
-    className="h-9 w-auto object-contain"
+    className="h-10 w-auto object-contain"
     aria-label="Signature of Head ETC Malangpora Pulwama"
   >
-    <g fill="none" stroke="#252468" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="140" cy="46" r="3.5" fill="#252468" stroke="none" />
+    <g fill="none" stroke="#2a2b72" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="140" cy="46" r="3.5" fill="#2a2b72" stroke="none" />
       <path d="M 140 48 L 156 128 C 158 135, 153 140, 149 130 C 145 110, 138 90, 8 116 C 50 114, 120 100, 166 94" />
-      <circle cx="180" cy="65" r="3.5" fill="#252468" stroke="none" />
+      <circle cx="180" cy="65" r="3.5" fill="#2a2b72" stroke="none" />
       <path d="M 179 67 L 173 138" />
       <path d="M 190 92 C 194 88, 198 84, 204 88 C 210 93, 215 90, 222 84 C 228 80, 236 86, 244 88" />
       <path d="M 182 108 L 395 92" />
@@ -145,6 +146,9 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
   // Safe Base64 Data URI for the photo to guarantee zero CORS canvas taint
   const [safePhotoUri, setSafePhotoUri] = useState<string>(student.photoUrl || '');
 
+  // Safe Base64 Data URI for verification QR code
+  const [safeQrCodeUri, setSafeQrCodeUri] = useState<string>('');
+
   const frontCardRef = useRef<HTMLDivElement>(null);
   const backCardRef = useRef<HTMLDivElement>(null);
   const exportFrontRef = useRef<HTMLDivElement>(null);
@@ -170,6 +174,32 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
       isMounted = false;
     };
   }, [student.photoUrl]);
+
+  // Generate verification QR code Data URI
+  useEffect(() => {
+    let isMounted = true;
+    const studentId = student.id || 'demo-student-id';
+    const verifyUrl = `https://ais-dev-5ne5nrmt7rjxzj6o56sh37-162173391185.asia-southeast1.run.app/verify/${studentId}`;
+    
+    QRCode.toDataURL(verifyUrl, {
+      margin: 1,
+      width: 160,
+      color: {
+        dark: '#1b5e20', // Dark forest green matching SKUAST colors
+        light: '#ffffff'
+      }
+    })
+      .then((url) => {
+        if (isMounted) setSafeQrCodeUri(url);
+      })
+      .catch((err) => {
+        console.error('Failed to generate verification QR code:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [student.id]);
 
   // Resolve front and back DOM nodes safely (prioritizing visible or always-mounted export nodes)
   const getFrontElement = (): HTMLElement => {
@@ -360,13 +390,16 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </div>
 
         {/* Top Header Text: Extension Training Centre SKUAST Kashmir Pulwama */}
-        <div className="text-center z-10 drop-shadow-md mt-1.5 px-1">
-          <h2 className="text-white font-extrabold text-[14px] tracking-wide uppercase leading-tight font-sans">
+        <div className="text-center z-10 drop-shadow-md mt-1 px-1 flex flex-col items-center">
+          <h2 className="text-white font-extrabold text-[13.5px] tracking-wide uppercase leading-tight font-sans">
             Extension Training Centre
           </h2>
-          <h3 className="text-amber-300 font-black text-[12.5px] tracking-wider uppercase leading-tight font-sans mt-0.5">
+          <h3 className="text-amber-300 font-black text-[12px] tracking-wider uppercase leading-tight font-sans mt-0.5">
             SKUAST Kashmir Pulwama
           </h3>
+          <span className="text-white font-black text-[10px] tracking-widest uppercase leading-none font-sans mt-1.5 px-2.5 py-1 bg-emerald-900/60 rounded border border-emerald-500/25 shadow-inner">
+            Student Identity Card
+          </span>
         </div>
 
         {/* Student / Trainee Photo: Arched / Domed shape overlapping the green & white zones */}
@@ -407,7 +440,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           <h3 className="font-extrabold text-slate-900 text-lg tracking-tight leading-tight">
             {student.name || 'STUDENT NAME'}
           </h3>
-          <p className="text-xs font-bold text-emerald-800 tracking-wide">
+          <p className="text-xs font-black text-emerald-900 uppercase tracking-wide">
             {traineeDesignation}
           </p>
         </div>
@@ -508,9 +541,9 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
       </div>
 
       {/* Middle White Portion (~50% height) with SKUAST Watermark Seal */}
-      <div className="flex-1 bg-white p-6 flex flex-col justify-center text-[13px] text-slate-900 font-semibold space-y-2.5 relative overflow-hidden">
+      <div className="flex-1 bg-white p-5 flex flex-col justify-between relative overflow-hidden">
         {/* Official SKUAST Kashmir Security Emblem Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-[0.08] z-0">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-[0.06] z-0">
           <img
             src={SKUAST_LOGO_DATA_URI}
             alt=""
@@ -519,60 +552,82 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           />
         </div>
 
-        {/* Primary Candidate Fields */}
-        <div className="space-y-1.5 relative z-10">
-          <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Name</span>
-            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
-            <span className="font-extrabold text-slate-900 text-[13px] leading-normal flex-1 break-words">
-              {student.name || '—'}
-            </span>
-          </div>
+        {/* Content area: Two-column layout */}
+        <div className="flex gap-4 relative z-10 flex-1 items-center">
+          {/* Left Column: Primary Fields */}
+          <div className="flex-1 space-y-2.5 text-[13px] text-slate-900 font-semibold">
+            {/* Name */}
+            <div className="flex items-baseline leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Name</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <span className="font-extrabold text-slate-900 text-[12.5px] leading-tight flex-1 break-words">
+                {student.name || '—'}
+              </span>
+            </div>
 
-          <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Father&apos;s Name</span>
-            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
-            <span className="font-bold text-slate-900 text-[13px] leading-normal flex-1 break-words">
-              {student.guardianName || '—'}
-            </span>
-          </div>
+            {/* Father's Name */}
+            <div className="flex items-baseline leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Father&apos;s Name</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <span className="font-bold text-slate-900 text-[12px] leading-tight flex-1 break-words">
+                {student.guardianName || '—'}
+              </span>
+            </div>
 
-          <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Blood Group</span>
-            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
-            <span className="font-extrabold text-emerald-800 text-[13px] leading-normal flex-1">
-              {student.bloodGroup || '—'}
-            </span>
-          </div>
+            {/* Blood Group */}
+            <div className="flex items-baseline leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Blood Group</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <span className="font-extrabold text-emerald-800 text-[12px] leading-none flex-1">
+                {student.bloodGroup || '—'}
+              </span>
+            </div>
 
-          <div className="flex items-start leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Division</span>
-            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
-            <span className="font-bold text-slate-900 text-[12.5px] leading-snug flex-1">
-              {student.division || 'Extension Training Centre (ETC) Malangpora Pulwama'}
-            </span>
-          </div>
-        </div>
+            {/* Course */}
+            <div className="flex items-start leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Course</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <span className="font-bold text-slate-900 text-[11.5px] leading-tight flex-1">
+                {student.courseTitle || 'One Year Basic Horticulture Training Course (BHT)'}
+              </span>
+            </div>
 
-        {/* Address: EXACT permanent address entered by student */}
-        <div className="pt-2 border-t border-slate-100 relative z-10">
-          <div className="flex items-start leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold shrink-0">Address</span>
-            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
-            <div className="font-bold text-slate-900 leading-snug text-xs break-words flex-1">
-              {student.address || '—'}
+            {/* Address */}
+            <div className="pt-1.5 border-t border-slate-100 flex items-start leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Address</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <div className="font-bold text-slate-900 leading-tight text-[11px] break-words flex-1">
+                {student.address || '—'}
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div className="pt-1 flex items-baseline leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Emergency No.</span>
+              <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
+              <span className="font-mono font-black text-slate-950 text-xs">
+                {student.emergencyContact || student.phone || '—'}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Emergency Contact No. */}
-        <div className="pt-1.5 relative z-10">
-          <p className="font-bold text-slate-900 text-xs flex items-baseline leading-normal">
-            <span className="text-slate-700">Emergency Contact No.</span>
-            <span className="font-mono font-black text-slate-950 ml-2 text-xs">
-              {student.emergencyContact || student.phone || '—'}
+          {/* Right Column: QR Code & Verification Tag */}
+          <div className="w-[100px] shrink-0 flex flex-col items-center justify-center bg-slate-50 p-2 rounded-xl border border-slate-200/60 shadow-xs">
+            {safeQrCodeUri ? (
+              <img
+                src={safeQrCodeUri}
+                alt="Verification QR Code"
+                className="w-[80px] h-[80px] object-contain bg-white rounded-md border border-slate-100 shadow-inner"
+              />
+            ) : (
+              <div className="w-[80px] h-[80px] bg-slate-100 flex items-center justify-center border border-slate-200 border-dashed rounded text-[9px] text-slate-400">
+                Generating...
+              </div>
+            )}
+            <span className="text-[8px] font-black text-emerald-800 uppercase tracking-wider mt-1.5 text-center leading-none">
+              Scan &amp; Verify
             </span>
-          </p>
+          </div>
         </div>
       </div>
 

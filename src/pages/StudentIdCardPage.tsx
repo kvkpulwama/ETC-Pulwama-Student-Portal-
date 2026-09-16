@@ -579,12 +579,12 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-slate-700 font-bold text-xs mb-1">
-                        Division / Centre
+                        Course Enrolled Title
                       </label>
                       <input
                         type="text"
-                        value={formData.division || 'Extension Training Centre (ETC) Malangpora Pulwama'}
-                        onChange={(e) => setFormData({ ...formData, division: e.target.value })}
+                        value={formData.courseTitle || 'One Year Basic Horticulture Training Course (BHT)'}
+                        onChange={(e) => setFormData({ ...formData, courseTitle: e.target.value })}
                         className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:ring-2 focus:ring-red-700 focus:outline-none"
                       />
                     </div>

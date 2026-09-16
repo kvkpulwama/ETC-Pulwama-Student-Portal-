@@ -1,5 +1,6 @@
 import React from 'react';
 import { INSTITUTION_INFO, FACULTY_LIST } from '../data/mockData';
+import { SKUAST_LOGO_DATA_URI } from '../assets/logoBase64';
 
 
 import { 
@@ -90,10 +91,11 @@ export const AboutPage: React.FC = () => {
           </div>
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
             <span className="text-emerald-700 font-bold text-xs uppercase block">Academic Collaboration</span>
-            <div className="flex items-center gap-2">
-              <img src="/skuast-logo-final.jpg" alt="SKUAST" className="w-7 h-7 object-contain" referrerPolicy="no-referrer" />
-              <img src="/icar-logo-final.jpg" alt="ICAR" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
-              <p className="font-extrabold text-slate-900 text-xs">SKUAST-K & ICAR Extension Guidelines</p>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full border border-emerald-600/40 p-0.5 bg-white shrink-0 overflow-hidden shadow-sm flex items-center justify-center">
+                <img src={SKUAST_LOGO_DATA_URI} alt="SKUAST Kashmir" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+              </div>
+              <p className="font-extrabold text-slate-900 text-xs">SKUAST-K Extension Guidelines & Standards</p>
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">

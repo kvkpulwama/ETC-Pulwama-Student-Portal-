@@ -3,6 +3,36 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import AdminApp from './AdminApp.tsx';
 import './index.css';
+import { FAVICON_DATA_URI } from './assets/faviconBase64';
+
+// Ensure browser tab favicon is set to official university emblem immediately
+function setBrowserFavicon() {
+  const existingLinks = document.querySelectorAll("link[rel*='icon']");
+  existingLinks.forEach(link => link.remove());
+
+  const link = document.createElement('link');
+  link.type = 'image/png';
+  link.rel = 'icon';
+  link.href = FAVICON_DATA_URI;
+  document.head.appendChild(link);
+
+  const shortcut = document.createElement('link');
+  shortcut.rel = 'shortcut icon';
+  shortcut.type = 'image/png';
+  shortcut.href = FAVICON_DATA_URI;
+  document.head.appendChild(shortcut);
+
+  const appleTouch = document.createElement('link');
+  appleTouch.rel = 'apple-touch-icon';
+  appleTouch.href = FAVICON_DATA_URI;
+  document.head.appendChild(appleTouch);
+}
+
+try {
+  setBrowserFavicon();
+} catch (err) {
+  console.warn('Favicon set error:', err);
+}
 
 const path = window.location.pathname;
 
