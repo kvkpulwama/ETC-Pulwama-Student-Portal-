@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StudentProfile, NavigationPage } from '../types';
-import { COURSES } from '../data/mockData';
+import { COURSES, DEMO_STUDENTS } from '../data/mockData';
 import { supabase, fetchStudentsFromSupabase, saveStudentProfileToSupabase } from '../lib/supabase';
 import { SupabaseConfigGuide } from '../components/SupabaseConfigGuide';
+import { AdminDashboardView } from '../components/AdminDashboardView';
 
 import { 
   ShieldCheck, 
@@ -14,6 +15,7 @@ import {
   Edit3, 
   Trash2, 
   Eye, 
+  EyeOff,
   RefreshCw, 
   Download, 
   X, 
@@ -32,7 +34,11 @@ import {
   Key,
   Hash,
   MapPin,
-  User
+  User,
+  Layers,
+  Bell,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface AdminPageProps {
@@ -40,7 +46,22 @@ interface AdminPageProps {
   onStudentSelect?: (student: StudentProfile) => void;
 }
 
+export interface AdminAlert {
+  id: string;
+  name: string;
+  email: string;
+  rollNumber: string;
+  courseTitle: string;
+  timestamp: string;
+  read: boolean;
+}
+
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
+  // Real-time Notification Alerts State
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
+  const [showAlertsDropdown, setShowAlertsDropdown] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+
   // Admin auth state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('etc_admin_logged_in') === 'true';
@@ -48,11 +69,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   // Student management state
-  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase'>('students');
+  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase' | 'dashboard'>('dashboard');
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +128,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       // 3. Merge without duplicates (using email as map key)
       const studentMap = new Map<string, StudentProfile>();
 
-      
+      // Base: High-quality demo students so the admin always has realistic trainees to manage out of the box
+      DEMO_STUDENTS.forEach(s => {
+        if (s.email) studentMap.set(s.email.toLowerCase().trim(), s);
+      });
 
       // Overlay: Locally registered students
       localStudents.forEach(s => {
@@ -132,6 +157,241 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       fetchAllStudents();
     }
   }, [isAdminLoggedIn]);
+
+  // Synthesize soft, premium notification chime using Web Audio API (No external assets required!)
+  const playNotificationChime = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+      osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+      osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3); // C6
+      
+      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+      
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.5);
+    } catch (e) {
+      console.warn("Audio Context playback prevented by browser auto-play policy:", e);
+    }
+  };
+
+  // Notification action handlers
+  const markAlertAsRead = (alertId: string) => {
+    const updated = alerts.map(a => a.id === alertId ? { ...a, read: true } : a);
+    setAlerts(updated);
+    localStorage.setItem('etc_admin_alerts', JSON.stringify(updated));
+  };
+
+  const markAllAlertsAsRead = () => {
+    const updated = alerts.map(a => ({ ...a, read: true }));
+    setAlerts(updated);
+    localStorage.setItem('etc_admin_alerts', JSON.stringify(updated));
+    showToast('All notifications marked as read.');
+  };
+
+  const clearAllAlerts = () => {
+    setAlerts([]);
+    localStorage.setItem('etc_admin_alerts', JSON.stringify([]));
+    showToast('Notification logs cleared.');
+  };
+
+  // Simulate student application for instant admin testing & demo feedback
+  const handleSimulateStudentRegistration = () => {
+    const names = [
+      'Showkat Ahmad Bhat', 'Rubeena Akhter', 'Muzamil Yusuf', 
+      'Suhail Bashir', 'Insha Farooq', 'Yasmeen Jan', 'Zahid Iqbal'
+    ];
+    const courses = [
+      { id: 'bht-101', title: 'Basic Horticulture Training Course (BHT)' },
+      { id: 'bat-102', title: 'Basic Agriculture Training Course (BAT)' }
+    ];
+    const districts = ['Pulwama', 'Srinagar', 'Budgam', 'Anantnag', 'Shopian', 'Kulgam'];
+    
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    const randomCourse = courses[Math.floor(Math.random() * courses.length)];
+    const randomDistrict = districts[Math.floor(Math.random() * districts.length)];
+    const randomEmail = `${randomName.toLowerCase().replace(/\s+/g, '')}${Math.floor(100 + Math.random() * 900)}@gmail.com`;
+    const randomRoll = `${randomCourse.id === 'bht-101' ? 'ETC-2026-BHT-' : 'ETC-2026-BAT-'}${Math.floor(41 + Math.random() * 50)}`;
+
+    const simulatedStudent: StudentProfile = {
+      id: `sim-${Date.now()}`,
+      rollNumber: randomRoll,
+      registrationNumber: `JK-ETC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: randomName,
+      email: randomEmail,
+      phone: `+91 9906${Math.floor(100000 + Math.random() * 900000)}`,
+      guardianName: `${randomName.split(' ')[0]}'s Father`,
+      dateOfBirth: '2005-04-12',
+      qualification: '10+2 Secondary School',
+      gender: Math.random() > 0.4 ? 'Male' : 'Female',
+      district: randomDistrict,
+      address: `${randomDistrict}, Kashmir, J&K`,
+      courseId: randomCourse.id,
+      courseTitle: randomCourse.title,
+      batchYear: '2026 - 2027',
+      cgpa: 'Enrolled (Semester I)',
+      semester: 'Semester I',
+      photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+      bloodGroup: 'B +ve'
+    };
+
+    // 1. Save locally to simulate client self-registration
+    const existingStudentsStr = localStorage.getItem('etc_registered_students');
+    const registeredList: StudentProfile[] = existingStudentsStr ? JSON.parse(existingStudentsStr) : [];
+    registeredList.push(simulatedStudent);
+    localStorage.setItem('etc_registered_students', JSON.stringify(registeredList));
+
+    // 2. Trigger Event
+    const alertObj: AdminAlert = {
+      id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      name: simulatedStudent.name,
+      email: simulatedStudent.email,
+      rollNumber: simulatedStudent.rollNumber,
+      courseTitle: simulatedStudent.courseTitle,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+
+    const existingAlertsStr = localStorage.getItem('etc_admin_alerts');
+    const alertsList = existingAlertsStr ? JSON.parse(existingAlertsStr) : [];
+    alertsList.unshift(alertObj);
+    localStorage.setItem('etc_admin_alerts', JSON.stringify(alertsList));
+
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('etc_new_student_applied', { detail: alertObj }));
+  };
+
+  // Set up real-time notification listeners and polling trigger
+  useEffect(() => {
+    if (!isAdminLoggedIn) return;
+
+    // Load initial alerts from localStorage
+    const loadAlerts = () => {
+      const stored = localStorage.getItem('etc_admin_alerts');
+      if (stored) {
+        setAlerts(JSON.parse(stored));
+      } else {
+        // Seed some demo alerts so the admin can see them
+        const initialSeed: AdminAlert[] = [
+          {
+            id: 'seed-1',
+            name: 'Aadil Bashir Rather',
+            email: 'aadilbashir@gmail.com',
+            rollNumber: 'ETC-2026-BHT-04',
+            courseTitle: 'Basic Horticulture Training Course (BHT)',
+            timestamp: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hours ago
+            read: true
+          },
+          {
+            id: 'seed-2',
+            name: 'Meenakshi Sharma',
+            email: 'meenakshi@gmail.com',
+            rollNumber: 'ETC-2026-BAT-02',
+            courseTitle: 'Basic Agriculture Training Course (BAT)',
+            timestamp: new Date(Date.now() - 3600000 * 5).toISOString(), // 5 hours ago
+            read: true
+          }
+        ];
+        localStorage.setItem('etc_admin_alerts', JSON.stringify(initialSeed));
+        setAlerts(initialSeed);
+      }
+    };
+
+    loadAlerts();
+
+    // Listen to storage events (for registrations from other browser tabs)
+    const handleStorageChange = () => {
+      loadAlerts();
+      fetchAllStudents(); // Auto-refresh roster
+    };
+
+    // Listen to local registration events
+    const handleNewRegistration = (e: Event) => {
+      const customEvent = e as CustomEvent<AdminAlert>;
+      const newAlert = customEvent.detail;
+      if (newAlert) {
+        setAlerts(prev => {
+          if (prev.some(a => a.id === newAlert.id)) return prev;
+          const updated = [newAlert, ...prev];
+          localStorage.setItem('etc_admin_alerts', JSON.stringify(updated));
+          return updated;
+        });
+
+        showToast(`🔔 New Applicant: ${newAlert.name} enrolled in ${newAlert.courseTitle.split(' - ')[0]}!`);
+        if (!isMuted) {
+          playNotificationChime();
+        }
+        fetchAllStudents();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('etc_new_student_applied', handleNewRegistration);
+
+    // Continuous smart polling verification (Interval fallback every 6 seconds)
+    let lastCheckedCount = -1;
+    const pollInterval = setInterval(() => {
+      try {
+        const storedStudentsStr = localStorage.getItem('etc_registered_students');
+        if (storedStudentsStr) {
+          const storedStudents: StudentProfile[] = JSON.parse(storedStudentsStr);
+          
+          if (lastCheckedCount !== -1 && storedStudents.length > lastCheckedCount) {
+            const currentAlertsStr = localStorage.getItem('etc_admin_alerts') || '[]';
+            const currentAlerts: AdminAlert[] = JSON.parse(currentAlertsStr);
+            
+            let changed = false;
+            storedStudents.forEach(st => {
+              const alreadyHasAlert = currentAlerts.some(a => a.email?.toLowerCase() === st.email?.toLowerCase());
+              if (!alreadyHasAlert) {
+                const synthesizedAlert: AdminAlert = {
+                  id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                  name: st.name,
+                  email: st.email,
+                  rollNumber: st.rollNumber,
+                  courseTitle: st.courseTitle,
+                  timestamp: new Date().toISOString(),
+                  read: false
+                };
+                currentAlerts.unshift(synthesizedAlert);
+                changed = true;
+              }
+            });
+
+            if (changed) {
+              localStorage.setItem('etc_admin_alerts', JSON.stringify(currentAlerts));
+              setAlerts(currentAlerts);
+              const mostRecent = currentAlerts[0];
+              showToast(`🔔 New Trainee: ${mostRecent.name} registered!`);
+              if (!isMuted) {
+                playNotificationChime();
+              }
+              fetchAllStudents();
+            }
+          }
+          lastCheckedCount = storedStudents.length;
+        }
+      } catch (err) {
+        console.warn('Notification poll warning:', err);
+      }
+    }, 6000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('etc_new_student_applied', handleNewRegistration);
+      clearInterval(pollInterval);
+    };
+  }, [isAdminLoggedIn, isMuted]);
 
   // Admin Login Handler
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -426,29 +686,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     showToast('Database wiped successfully! Kept ' + keep.length + ' records.');
   };
 
-  // Export CSV Handler
+  // Export CSV Handler (Exports filtered/current roster view safely using Blobs)
   const handleExportCSV = () => {
-    if (students.length === 0) return;
+    const listToExport = filteredStudents.length > 0 ? filteredStudents : students;
+    if (listToExport.length === 0) {
+      showToast('No students available to export.');
+      return;
+    }
+    
     const headers = ['Roll Number', 'Registration No', 'Name', 'Email', 'Phone', 'Course', 'Batch', 'CGPA'];
-    const rows = filteredStudents.map(s => [
-      `"${s.rollNumber}"`,
-      `"${s.registrationNumber}"`,
-      `"${s.name}"`,
-      `"${s.email}"`,
-      `"${s.phone}"`,
-      `"${s.courseTitle}"`,
-      `"${s.batchYear}"`,
-      `"${s.cgpa}"`
+    
+    const escapeCSV = (val: any) => {
+      if (val === undefined || val === null) return '""';
+      let str = String(val).trim();
+      str = str.replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = listToExport.map(s => [
+      escapeCSV(s.rollNumber),
+      escapeCSV(s.registrationNumber),
+      escapeCSV(s.name),
+      escapeCSV(s.email),
+      escapeCSV(s.phone),
+      escapeCSV(s.courseTitle),
+      escapeCSV(s.batchYear),
+      escapeCSV(s.cgpa)
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.href = url;
     link.setAttribute('download', `ETC_Pulwama_Students_Roster_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast(`Successfully exported ${listToExport.length} student records to CSV.`);
   };
 
   // Filter students by Search & Course
@@ -518,13 +794,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-xs text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full pl-9 pr-10 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-xs text-white focus:border-amber-400 focus:outline-none"
                   placeholder="••••••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-white focus:outline-none transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -585,6 +872,135 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Real-time Notification Alerts Hub */}
+            <div className="relative">
+              <button
+                onClick={() => setShowAlertsDropdown(!showAlertsDropdown)}
+                className={`p-2.5 rounded-xl transition-all relative flex items-center justify-center border ${
+                  showAlertsDropdown 
+                    ? 'bg-amber-400 border-amber-300 text-slate-950' 
+                    : 'bg-emerald-950 hover:bg-emerald-900 border-emerald-800 text-emerald-100 hover:text-white'
+                }`}
+                title="Trainee Applications Hub"
+              >
+                <Bell className={`w-4 h-4 ${alerts.some(a => !a.read) ? 'animate-swing' : ''}`} />
+                {alerts.filter(a => !a.read).length > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white font-extrabold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#00472A] shadow-md animate-pulse">
+                    {alerts.filter(a => !a.read).length}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown Panel */}
+              {showAlertsDropdown && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 text-slate-800 z-50 overflow-hidden divide-y divide-slate-100 animate-fadeIn">
+                  {/* Dropdown Header */}
+                  <div className="p-4 bg-slate-50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-[#005E38]" />
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700">Trainee Applications</span>
+                      {alerts.filter(a => !a.read).length > 0 && (
+                        <span className="bg-[#005E38]/10 text-[#005E38] text-[9px] font-black px-1.5 py-0.5 rounded">
+                          {alerts.filter(a => !a.read).length} NEW
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {/* Toggle Audio Mute */}
+                      <button
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="p-1 hover:bg-slate-200 rounded transition-colors text-slate-500 hover:text-slate-800"
+                        title={isMuted ? "Unmute notification chime" : "Mute notification chime"}
+                      >
+                        {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      </button>
+                      <button
+                        onClick={markAllAlertsAsRead}
+                        className="text-[10px] font-bold text-[#005E38] hover:underline"
+                      >
+                        Mark all read
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Simulate Tool Belt (Perfect for instant developer/user demonstration) */}
+                  <div className="px-4 py-2 bg-[#005E38]/5 border-b border-[#005E38]/10 flex items-center justify-between">
+                    <span className="text-[10px] text-slate-600 font-medium">Want to test live alerts?</span>
+                    <button
+                      onClick={handleSimulateStudentRegistration}
+                      className="px-2 py-1 bg-[#005E38] text-white text-[9px] font-black uppercase tracking-wider rounded hover:bg-[#004d2e] transition-all"
+                    >
+                      ⚡ Simulate Apply
+                    </button>
+                  </div>
+
+                  {/* Alerts Scroll List */}
+                  <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100">
+                    {alerts.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400">
+                        <Bell className="w-8 h-8 mx-auto stroke-1 mb-2 opacity-50" />
+                        <p className="text-xs font-medium">No application alerts received yet.</p>
+                        <p className="text-[10px] mt-1">Simulated or real student registrations will appear here instantly.</p>
+                      </div>
+                    ) : (
+                      alerts.map(alert => (
+                        <div 
+                          key={alert.id} 
+                          className={`p-3.5 transition-colors flex items-start gap-3 hover:bg-slate-50/80 ${
+                            !alert.read ? 'bg-emerald-50/20' : ''
+                          }`}
+                        >
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                            !alert.read ? 'bg-emerald-500 animate-ping' : 'bg-transparent'
+                          }`} />
+                          
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <h4 className="text-xs font-bold text-slate-900 truncate">
+                                {alert.name}
+                              </h4>
+                              <span className="text-[9px] text-slate-400 whitespace-nowrap">
+                                {new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 truncate">
+                              Course: {alert.courseTitle.split(' - ')[0]}
+                            </p>
+                            <div className="flex items-center justify-between gap-2 pt-0.5">
+                              <span className="text-[9px] font-mono bg-slate-100 text-slate-600 px-1 py-0.5 rounded">
+                                Roll: {alert.rollNumber}
+                              </span>
+                              {!alert.read && (
+                                <button
+                                  onClick={() => markAlertAsRead(alert.id)}
+                                  className="text-[9px] font-black text-[#005E38] uppercase hover:underline"
+                                >
+                                  Ack/Read
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Dropdown Footer */}
+                  {alerts.length > 0 && (
+                    <div className="p-3 bg-slate-50 flex justify-between items-center text-[10px] font-bold">
+                      <span className="text-slate-500">Total Alerts: {alerts.length}</span>
+                      <button
+                        onClick={clearAllAlerts}
+                        className="text-red-600 hover:underline"
+                      >
+                        Clear Alert History
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleOpenAddModal}
               className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
@@ -607,6 +1023,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-6">
         {/* Navigation Tabs */}
         <div className="flex border-b border-slate-200 gap-2 font-bold text-xs pt-2">
+          <button
+            onClick={() => setActiveAdminTab('dashboard')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
+              activeAdminTab === 'dashboard'
+                ? 'bg-white border-slate-200 text-[#005E38] shadow-sm font-extrabold'
+                : 'bg-slate-100 border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Layers className="w-4 h-4 text-emerald-600" />
+            <span>Summary Dashboard</span>
+          </button>
+
           <button
             onClick={() => setActiveAdminTab('students')}
             className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
@@ -634,6 +1062,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
         {activeAdminTab === 'supabase' ? (
           <SupabaseConfigGuide />
+        ) : activeAdminTab === 'dashboard' ? (
+          <AdminDashboardView 
+            students={students}
+            totalCount={totalCount}
+            bhtCount={bhtCount}
+            batCount={batCount}
+            shortTermCount={shortTermCount}
+          />
         ) : (
           <>
             {/* Statistics Cards */}

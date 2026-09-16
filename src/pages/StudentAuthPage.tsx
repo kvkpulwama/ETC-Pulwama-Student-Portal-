@@ -373,6 +373,29 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
       registeredList.push(newStudent);
       localStorage.setItem('etc_registered_students', JSON.stringify(registeredList));
 
+      // Trigger Real-time Alert for Administrator
+      try {
+        const alertObj = {
+          id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          name: newStudent.name,
+          email: newStudent.email,
+          rollNumber: newStudent.rollNumber,
+          courseTitle: newStudent.courseTitle,
+          timestamp: new Date().toISOString(),
+          read: false
+        };
+        const existingAlertsStr = localStorage.getItem('etc_admin_alerts');
+        const alertsList = existingAlertsStr ? JSON.parse(existingAlertsStr) : [];
+        alertsList.unshift(alertObj);
+        localStorage.setItem('etc_admin_alerts', JSON.stringify(alertsList));
+        
+        // Dispatch events to notify other tabs/listeners
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('etc_new_student_applied', { detail: alertObj }));
+      } catch (alertErr) {
+        console.warn('Could not generate admin notification:', alertErr);
+      }
+
       setRegSuccessMsg(saveRes.success && saveRes.data ? `Supabase Account Registration Successful! Assigned Roll No: ${formattedRoll}` : `Offline Registration Successful (Supabase Sync Failed). Assigned Roll No: ${formattedRoll}`);
       setTimeout(() => {
         onLoginSuccess(newStudent);

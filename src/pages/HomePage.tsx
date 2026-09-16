@@ -37,33 +37,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="absolute inset-0 z-0 bg-[url('/campus_banner_kashmir.jpg')] bg-cover bg-center"></div>
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#005E38]/90 via-[#014429]/85 to-slate-950/95"></div>
         
-        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center space-y-6">
+        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center space-y-8">
           
-          {/* Prominent SKUAST Kashmir Official Emblem Logo */}
-          <div className="flex flex-col items-center space-y-3">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white p-1.5 shadow-2xl border-4 border-amber-400 flex items-center justify-center overflow-hidden hover:scale-105 transition-all duration-300">
-              <img 
-                src={SKUAST_LOGO_DATA_URI} 
-                alt="Sher-e-Kashmir University of Agricultural Sciences & Technology of Kashmir Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-950/80 border border-emerald-400/50 text-amber-300 text-xs sm:text-sm font-extrabold tracking-wider uppercase font-mono shadow-md">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>SKUAST KASHMIR • ESTD 1982</span>
-            </div>
-          </div>
-
-          <div className="space-y-2 max-w-4xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-white tracking-tight leading-snug drop-shadow-md">
-              Sher-e-Kashmir University of Agricultural Sciences &amp; Technology of Kashmir
-            </h2>
-            <p className="text-sm sm:text-base font-semibold text-emerald-200 tracking-wide">
-              Extension Training Centre, Malangpora Pulwama • Department of Agriculture Production &amp; Farmers Welfare
-            </p>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-tight leading-[1.15] max-w-3xl text-amber-300 py-2">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-black tracking-tight leading-[1.15] max-w-5xl text-amber-300 py-4 drop-shadow-lg">
             LEARN • GROW • LEAD
           </h1>
 

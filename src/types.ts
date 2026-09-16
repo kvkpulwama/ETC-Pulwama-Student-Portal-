@@ -99,6 +99,7 @@ export interface StudentProfile {
   validUpto?: string;
   emergencyContact?: string;
   designation?: string;
+  libraryReaderNo?: string;
 }
 
 export interface StudentMark {

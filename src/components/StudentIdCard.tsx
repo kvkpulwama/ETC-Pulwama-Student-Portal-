@@ -146,8 +146,35 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
   // Safe Base64 Data URI for the photo to guarantee zero CORS canvas taint
   const [safePhotoUri, setSafePhotoUri] = useState<string>(student.photoUrl || '');
 
-  // Safe Base64 Data URI for verification QR code
-  const [safeQrCodeUri, setSafeQrCodeUri] = useState<string>('');
+  // Real-time dynamic Verification QR Code encoding core details
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (student.rollNumber || student.registrationNumber) {
+      const verificationText = `ETC SKUAST-K TRAINEE VERIFICATION
+Name: ${student.name || 'N/A'}
+Roll No: ${student.rollNumber || 'N/A'}
+Reg No: ${student.registrationNumber || 'N/A'}
+${student.libraryReaderNo ? `Library Reader No: ${student.libraryReaderNo}\n` : ''}Course: ${student.courseTitle || 'N/A'}
+Valid Upto: ${formatValidUpto(student.validUpto)}
+Official verification portal: Extension Training Centre, SKUAST Kashmir, Malangpora Pulwama`;
+      
+      QRCode.toDataURL(verificationText, {
+        margin: 1,
+        width: 150,
+        color: {
+          dark: '#1b5e20', // deep SKUAST green
+          light: '#ffffff'
+        }
+      })
+        .then(url => {
+          setQrCodeDataUrl(url);
+        })
+        .catch(err => {
+          console.error('Verification QR code generation failed:', err);
+        });
+    }
+  }, [student.rollNumber, student.registrationNumber, student.libraryReaderNo, student.name, student.courseTitle, student.validUpto]);
 
   const frontCardRef = useRef<HTMLDivElement>(null);
   const backCardRef = useRef<HTMLDivElement>(null);
@@ -169,37 +196,13 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
             if (isMounted) setSafePhotoUri(student.photoUrl || '');
           });
       }
+    } else {
+      setSafePhotoUri('');
     }
     return () => {
       isMounted = false;
     };
   }, [student.photoUrl]);
-
-  // Generate verification QR code Data URI
-  useEffect(() => {
-    let isMounted = true;
-    const studentId = student.id || 'demo-student-id';
-    const verifyUrl = `https://ais-dev-5ne5nrmt7rjxzj6o56sh37-162173391185.asia-southeast1.run.app/verify/${studentId}`;
-    
-    QRCode.toDataURL(verifyUrl, {
-      margin: 1,
-      width: 160,
-      color: {
-        dark: '#1b5e20', // Dark forest green matching SKUAST colors
-        light: '#ffffff'
-      }
-    })
-      .then((url) => {
-        if (isMounted) setSafeQrCodeUri(url);
-      })
-      .catch((err) => {
-        console.error('Failed to generate verification QR code:', err);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [student.id]);
 
   // Resolve front and back DOM nodes safely (prioritizing visible or always-mounted export nodes)
   const getFrontElement = (): HTMLElement => {
@@ -446,9 +449,9 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </div>
 
         {/* Detail Rows with Clean Colon Alignment */}
-        <div className="space-y-1.5 text-[13px] text-slate-900 font-semibold my-auto pt-1 relative z-10">
+        <div className="space-y-1 text-[13px] text-slate-900 font-semibold my-auto pt-1 relative z-10">
           <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Roll No.</span>
+            <span className="w-[132px] shrink-0 text-slate-700 font-bold whitespace-nowrap">Roll No.</span>
             <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
             <span className="font-bold text-slate-900 font-mono text-[13px] leading-normal flex-1">
               {student.rollNumber || '—'}
@@ -456,7 +459,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           </div>
 
           <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Registration</span>
+            <span className="w-[132px] shrink-0 text-slate-700 font-bold whitespace-nowrap">Registration</span>
             <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
             <span className="font-bold text-slate-900 font-mono text-[12px] leading-normal break-all flex-1">
               {student.registrationNumber || '—'}
@@ -464,7 +467,15 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           </div>
 
           <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Phone</span>
+            <span className="w-[132px] shrink-0 text-slate-700 font-bold whitespace-nowrap">Library Reader No.</span>
+            <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
+            <span className="font-bold text-slate-900 font-mono text-[12px] leading-normal break-all flex-1">
+              {student.libraryReaderNo || '—'}
+            </span>
+          </div>
+
+          <div className="flex items-baseline leading-normal">
+            <span className="w-[132px] shrink-0 text-slate-700 font-bold whitespace-nowrap">Phone</span>
             <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
             <span className="font-bold text-slate-900 font-mono text-[13px] leading-normal flex-1">
               {student.phone || '—'}
@@ -472,7 +483,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           </div>
 
           <div className="flex items-baseline leading-normal">
-            <span className="w-[110px] shrink-0 text-slate-700 font-bold">Valid upto</span>
+            <span className="w-[132px] shrink-0 text-slate-700 font-bold whitespace-nowrap">Valid upto</span>
             <span className="mr-2 text-slate-900 font-bold shrink-0">:</span>
             <span className="font-bold text-slate-900 text-[13px] leading-normal flex-1">
               {formatValidUpto(student.validUpto)}
@@ -540,8 +551,8 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
         </p>
       </div>
 
-      {/* Middle White Portion (~50% height) with SKUAST Watermark Seal */}
-      <div className="flex-1 bg-white p-5 flex flex-col justify-between relative overflow-hidden">
+      {/* Middle White Portion (~50% height) with Trainee Details & QR Code Side-by-Side */}
+      <div className="flex-1 bg-white p-5 flex flex-row items-center gap-3.5 relative overflow-hidden">
         {/* Official SKUAST Kashmir Security Emblem Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-[0.06] z-0">
           <img
@@ -552,82 +563,88 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
           />
         </div>
 
-        {/* Content area: Two-column layout */}
-        <div className="flex gap-4 relative z-10 flex-1 items-center">
-          {/* Left Column: Primary Fields */}
-          <div className="flex-1 space-y-2.5 text-[13px] text-slate-900 font-semibold">
+        {/* Left Column: Trainee Details (width: ~68%) */}
+        <div className="flex-1 min-w-0 space-y-2 relative z-10 text-[12px] text-slate-900 font-semibold">
+          <div className="space-y-1.5">
             {/* Name */}
             <div className="flex items-baseline leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Name</span>
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-[11px]">Name</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <span className="font-extrabold text-slate-900 text-[12.5px] leading-tight flex-1 break-words">
+              <span className="font-extrabold text-slate-900 text-[12px] leading-tight flex-1 break-words truncate">
                 {student.name || '—'}
               </span>
             </div>
 
             {/* Father's Name */}
             <div className="flex items-baseline leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Father&apos;s Name</span>
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-[11px]">Father&apos;s Name</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <span className="font-bold text-slate-900 text-[12px] leading-tight flex-1 break-words">
+              <span className="font-bold text-slate-900 text-[11.5px] leading-tight flex-1 break-words truncate">
                 {student.guardianName || '—'}
               </span>
             </div>
 
             {/* Blood Group */}
             <div className="flex items-baseline leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Blood Group</span>
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-[11px]">Blood Group</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <span className="font-extrabold text-emerald-800 text-[12px] leading-none flex-1">
+              <span className="font-extrabold text-emerald-800 text-[11.5px] leading-none flex-1">
                 {student.bloodGroup || '—'}
               </span>
             </div>
 
             {/* Course */}
             <div className="flex items-start leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Course</span>
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-[11px]">Course</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <span className="font-bold text-slate-900 text-[11.5px] leading-tight flex-1">
-                {student.courseTitle || 'One Year Basic Horticulture Training Course (BHT)'}
+              <span className="font-bold text-slate-900 text-[11px] leading-tight flex-1">
+                {student.courseTitle || '—'}
               </span>
             </div>
+          </div>
 
-            {/* Address */}
-            <div className="pt-1.5 border-t border-slate-100 flex items-start leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Address</span>
+          {/* Address */}
+          <div className="pt-1.5 border-t border-slate-100">
+            <div className="flex items-start leading-normal">
+              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-[11px]">Address</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <div className="font-bold text-slate-900 leading-tight text-[11px] break-words flex-1">
+              <div className="font-bold text-slate-900 leading-tight text-[10.5px] break-words flex-1 line-clamp-2">
                 {student.address || '—'}
               </div>
             </div>
+          </div>
 
-            {/* Emergency Contact */}
-            <div className="pt-1 flex items-baseline leading-normal">
-              <span className="w-[85px] shrink-0 text-slate-700 font-bold text-xs">Emergency No.</span>
+          {/* Emergency Contact */}
+          <div className="pt-0.5">
+            <p className="font-bold text-slate-900 text-[11px] flex items-baseline leading-normal">
+              <span className="text-slate-700 w-[85px] shrink-0 text-[11px]">Emergency No.</span>
               <span className="mr-1.5 text-slate-900 font-bold shrink-0">:</span>
-              <span className="font-mono font-black text-slate-950 text-xs">
+              <span className="font-mono font-black text-slate-950 text-[11px] flex-1">
                 {student.emergencyContact || student.phone || '—'}
               </span>
-            </div>
+            </p>
           </div>
+        </div>
 
-          {/* Right Column: QR Code & Verification Tag */}
-          <div className="w-[100px] shrink-0 flex flex-col items-center justify-center bg-slate-50 p-2 rounded-xl border border-slate-200/60 shadow-xs">
-            {safeQrCodeUri ? (
-              <img
-                src={safeQrCodeUri}
-                alt="Verification QR Code"
-                className="w-[80px] h-[80px] object-contain bg-white rounded-md border border-slate-100 shadow-inner"
-              />
-            ) : (
-              <div className="w-[80px] h-[80px] bg-slate-100 flex items-center justify-center border border-slate-200 border-dashed rounded text-[9px] text-slate-400">
-                Generating...
-              </div>
-            )}
-            <span className="text-[8px] font-black text-emerald-800 uppercase tracking-wider mt-1.5 text-center leading-none">
-              Scan &amp; Verify
-            </span>
-          </div>
+        {/* Right Column: Secure Verification QR Code (width: ~32%) */}
+        <div className="w-[95px] shrink-0 flex flex-col items-center justify-center relative z-10 p-1.5 border border-emerald-900/10 bg-slate-50/70 rounded-xl text-center self-center shadow-xs">
+          {qrCodeDataUrl ? (
+            <img 
+              src={qrCodeDataUrl} 
+              className="w-[78px] h-[78px] object-contain border border-emerald-900/10 rounded bg-white p-0.5 shadow-2xs" 
+              alt="Verification QR Code" 
+            />
+          ) : (
+            <div className="w-[78px] h-[78px] bg-slate-100 flex items-center justify-center text-slate-400 text-[8px] rounded border border-dashed border-slate-200">
+              Generating...
+            </div>
+          )}
+          <span className="text-[7.5px] font-black text-emerald-950 tracking-wider mt-1.5 block leading-none">
+            SCAN TO VERIFY
+          </span>
+          <span className="text-[6px] font-bold text-slate-500 uppercase tracking-tighter mt-0.5 block leading-none">
+            SKUAST-K ETC
+          </span>
         </div>
       </div>
 
@@ -666,7 +683,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({
               {student.name}&apos;s Identity Card
             </h4>
             <p className="text-xs text-slate-500">
-              Roll No: <span className="font-mono font-bold text-slate-700">{student.rollNumber}</span> • Regd: <span className="font-mono font-bold text-slate-700">{student.registrationNumber}</span>
+              Roll No: <span className="font-mono font-bold text-slate-700">{student.rollNumber || '—'}</span> • Regd: <span className="font-mono font-bold text-slate-700">{student.registrationNumber || '—'}</span>{student.libraryReaderNo && <> • Lib Reader: <span className="font-mono font-bold text-slate-700">{student.libraryReaderNo}</span></>}
             </p>
           </div>
 

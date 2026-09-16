@@ -39,6 +39,7 @@ const BLANK_STUDENT: StudentProfile = {
   guardianName: '',
   rollNumber: '',
   registrationNumber: '',
+  libraryReaderNo: '',
   courseId: 'bht-101',
   courseTitle: 'One Year Basic Horticulture Training Course (BHT)',
   designation: 'Trainee (BHT)',
@@ -227,8 +228,9 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
       guardianName: '',
       rollNumber: '',
       registrationNumber: '',
+      libraryReaderNo: '',
       courseId: 'bht-101',
-      courseTitle: 'One Year Basic Horticulture Training Course',
+      courseTitle: 'One Year Basic Horticulture Training Course (BHT)',
       designation: 'Trainee (BHT)',
       division: 'Extension Training Centre (ETC) Malangpora Pulwama',
       bloodGroup: '',
@@ -243,6 +245,9 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
       batchYear: '2026-27'
     };
     setFormData(blankForm);
+    setActiveStudent(blankForm);
+    // Also remove the saved item so the preview resets on reload too
+    localStorage.removeItem('etc_my_student_icard');
     if (clearSuccess) {
       setSubmitSuccess(false);
     }
@@ -454,7 +459,7 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
                     <span>2. Academic &amp; Roll Credentials</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-slate-700 font-bold text-xs mb-1">
                         Roll Number <span className="text-red-600">*</span>
@@ -479,6 +484,19 @@ export const StudentIdCardPage: React.FC<StudentIdCardPageProps> = ({
                         value={formData.registrationNumber}
                         onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
                         placeholder=""
+                        className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono focus:bg-white focus:ring-2 focus:ring-red-700 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold text-xs mb-1">
+                        Library Reader No <span className="text-slate-400 font-normal">(Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.libraryReaderNo || ''}
+                        onChange={(e) => setFormData({ ...formData, libraryReaderNo: e.target.value })}
+                        placeholder="e.g. LIB-2026-04"
                         className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono focus:bg-white focus:ring-2 focus:ring-red-700 focus:outline-none"
                       />
                     </div>

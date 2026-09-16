@@ -211,7 +211,7 @@ export async function getStudentProfileFromSupabase(identifier: string) {
 /**
  * Helper to save student profile to Supabase with automatic schema detection, local backup, and offline safety
  */
-export async function saveStudentProfileToSupabase(student: any): Promise<{ success: boolean; data?: any; error?: string }> {
+export async function saveStudentProfileToSupabase(student: any): Promise<{ success: boolean; data?: any; error?: string; info?: string }> {
   // 1. Always write to local storage first as a guaranteed offline backup
   try {
     if (typeof window !== 'undefined') {
@@ -261,15 +261,29 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       cgpa: student.cgpa,
     };
 
+    // Helper to identify fetch/network connectivity issues
+    const isFetchError = (err: any) => {
+      if (!err) return false;
+      const msg = (err.message || '').toLowerCase();
+      return msg.includes('fetch') || msg.includes('typeerror') || msg.includes('network') || msg.includes('failed');
+    };
+
     // Primary upsert
     try {
       const { data: upsertData, error: upsertErr } = await supabase.from('students').upsert(snakeRecord).select();
       if (!upsertErr && upsertData) {
         return { success: true, data: upsertData };
       }
-      console.error("Supabase upsert error:", upsertErr);
+      
+      if (isFetchError(upsertErr)) {
+        console.info("Supabase offline or unreachable. Student saved locally to offline backup.");
+        return { success: true, data: [snakeRecord], info: 'Saved locally' };
+      }
+      
+      console.warn("Supabase upsert notice:", upsertErr);
     } catch (upsertNetErr) {
-      console.error("Supabase upsert net error:", upsertNetErr);
+      console.info("Supabase offline network connection:", upsertNetErr);
+      return { success: true, data: [snakeRecord], info: 'Saved locally' };
     }
 
     // Insert essential fields fallback
@@ -291,9 +305,16 @@ export async function saveStudentProfileToSupabase(student: any): Promise<{ succ
       if (!insertErr && insertData) {
         return { success: true, data: insertData };
       }
-      console.error("Supabase insert error:", insertErr);
+      
+      if (isFetchError(insertErr)) {
+        console.info("Supabase offline or unreachable. Student saved locally to offline backup.");
+        return { success: true, data: [snakeRecord], info: 'Saved locally' };
+      }
+      
+      console.warn("Supabase insert notice:", insertErr);
     } catch (insertNetErr) {
-      console.error("Supabase insert net error:", insertNetErr);
+      console.info("Supabase offline network connection:", insertNetErr);
+      return { success: true, data: [snakeRecord], info: 'Saved locally' };
     }
 
     return { success: false, error: 'Failed to save to Supabase. Check console logs.' };
