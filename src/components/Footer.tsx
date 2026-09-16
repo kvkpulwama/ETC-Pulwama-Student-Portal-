@@ -85,6 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               { page: 'downloads', label: 'Downloads & Forms' },
               { page: 'gallery', label: 'Campus Orchard Gallery' },
               { page: 'contact', label: 'Helpdesk & Map' },
+              { page: 'faq', label: 'Help/FAQ Support' },
               { page: 'auth', label: 'Student Login / Register' },
               { page: 'admin', label: 'Admin Access' }
             ].map((link) => (

@@ -49,7 +49,7 @@ export const AboutPage: React.FC = () => {
           </div>
           <h2 className="text-xl font-extrabold text-slate-900">Our Vision</h2>
           <p className="text-xs text-slate-600 leading-relaxed">
-            To serve as a center of excellence in agricultural extension, empowering rural youth, extension workers, and farming communities of Jammu & Kashmir with modern scientific knowledge in temperate horticulture, agronomy, and sustainable farm management.
+            The KVK Pulwama is a knowledge and innovation hub, delivering integrated, real-time, and location specific solution to farmers, entrepreneurs, FPOs and stake holders.
           </p>
         </div>
 
@@ -59,9 +59,21 @@ export const AboutPage: React.FC = () => {
           </div>
           <h2 className="text-xl font-extrabold text-slate-900">Our Mission</h2>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Imparting rigorous, hands-on field practical training in high-density apple grafting, soil health diagnostics, protected greenhouse cultivation, and integrated pest management (IPM) to foster self-employment and modern agricultural productivity.
+            To serve as the district-level knowledge and resource centre for agricultural and allied sectors through assessing, refining, and disseminating location-specific technologies; building capacities of farmers and stakeholders; and promoting innovation, skill development, and entrepreneurship for sustainable agricultural development.
           </p>
         </div>
+      </div>
+
+      {/* Strategic Objectives Section */}
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+          Strategic Objectives
+        </h3>
+        <ul className="space-y-2 text-xs text-slate-600 leading-relaxed list-disc list-inside">
+          <li>Act as a single window system for all agricultural advisory, technologies, input and support services.</li>
+          <li>Bridges the gap between research & field level application through data and demand service extension.</li>
+        </ul>
       </div>
 
       {/* Institutional Mandate & History */}

@@ -39,7 +39,7 @@ export const generateDocumentPDF = (title: string, category: string, contentText
 
   doc.setFontSize(8);
   doc.setTextColor(255, 255, 255);
-  doc.text('Website: etcpulwama.edu | Email: principal.etcpulwama@jk.gov.in', pageWidth / 2, 37, { align: 'center' });
+  doc.text('Website: etcpulwama.edu | Email: pcpulwama@gmail.com', pageWidth / 2, 37, { align: 'center' });
 
   // Document Badge
   doc.setFillColor(243, 244, 246);

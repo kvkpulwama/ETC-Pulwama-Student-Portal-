@@ -20,7 +20,8 @@ import {
   Bell,
   Globe,
   ShieldCheck,
-  IdCard
+  IdCard,
+  HelpCircle
 } from 'lucide-react';
 import { NavigationPage, StudentProfile } from '../types';
 import { INSTITUTION_INFO, NOTICES } from '../data/mockData';
@@ -45,14 +46,15 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems: { id: NavigationPage; label: string; icon: React.ReactNode }[] = [
-    { id: 'home', label: 'Home', icon: <Home className="w-3.5 h-3.5" /> },
-    { id: 'about', label: 'About', icon: <Info className="w-3.5 h-3.5" /> },
-    { id: 'courses', label: 'Courses', icon: <BookOpen className="w-3.5 h-3.5" /> },
-    { id: 'idcard', label: 'Student I-Card', icon: <IdCard className="w-3.5 h-3.5 text-amber-300" /> },
-    { id: 'downloads', label: 'Downloads', icon: <Download className="w-3.5 h-3.5" /> },
-    { id: 'gallery', label: 'Gallery', icon: <ImageIcon className="w-3.5 h-3.5" /> },
-    { id: 'contact', label: 'Contact', icon: <PhoneCall className="w-3.5 h-3.5" /> }
+  const navItems = [
+    { id: 'home' as NavigationPage, label: 'Home', IconComponent: Home },
+    { id: 'about' as NavigationPage, label: 'About', IconComponent: Info },
+    { id: 'courses' as NavigationPage, label: 'Courses', IconComponent: BookOpen },
+    { id: 'idcard' as NavigationPage, label: 'Student I-Card', IconComponent: IdCard },
+    { id: 'downloads' as NavigationPage, label: 'Downloads', IconComponent: Download },
+    { id: 'gallery' as NavigationPage, label: 'Gallery', IconComponent: ImageIcon },
+    { id: 'contact' as NavigationPage, label: 'Contact', IconComponent: PhoneCall },
+    { id: 'faq' as NavigationPage, label: 'Help/FAQ', IconComponent: HelpCircle }
   ];
 
   const handleNavClick = (page: NavigationPage) => {
@@ -72,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
             <span className="flex items-center gap-1.5 text-emerald-200">
               <Award className="w-3.5 h-3.5 text-amber-400" />
-              SKUAST-K / ICAR Recognized Centre
+              SKUAST-Kashmir
             </span>
           </div>
 
@@ -135,35 +137,31 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* 3. Deep Green Dynamic Navigation Bar */}
       <nav className="bg-gradient-to-r from-[#023321] via-[#045c3b] to-[#023321] text-white sticky top-0 z-50 shadow-xl border-t border-emerald-700/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between">
-          {/* Left Brand Badge: "STUDENT PORTAL" */}
-          <div 
-            onClick={() => handleNavClick('home')}
-            className="flex items-center gap-2 cursor-pointer font-black text-xs sm:text-sm tracking-wider text-white uppercase group bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-600/60 shadow-inner"
-          >
-            <GraduationCap className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
-            <span className="group-hover:text-amber-300 transition-colors">STUDENT PORTAL v2026</span>
-          </div>
-
-          {/* Desktop Links */}
-          <div className="hidden lg:flex items-center space-x-3.5 xl:space-x-5 text-xs font-extrabold tracking-wide">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2 flex items-center justify-between">
+          {/* Desktop Links - Flex row, never wrap, taking the primary space since Brand badge is removed */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-extrabold tracking-wide flex-nowrap">
             {navItems.map((item) => {
               const isActive = currentPage === item.id;
+              const Icon = item.IconComponent;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`py-1 flex items-center gap-1.5 transition-all relative ${
+                  className={`py-1.5 px-3 rounded-full flex items-center gap-2 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap shadow-sm hover:shadow-md ${
                     isActive
-                      ? 'text-amber-300 font-black'
-                      : 'text-white/90 hover:text-amber-300'
+                      ? 'bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-t border-amber-200 border-b-2 border-amber-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]'
+                      : 'text-white hover:text-amber-300 hover:bg-emerald-800/80 hover:border-emerald-600/40 border border-transparent font-bold'
                   }`}
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-amber-400 to-amber-200 rounded-full shadow-sm"></span>
-                  )}
+                  {/* Real-look 3D Sphere/Bubble Icon Wrapper */}
+                  <span className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 border transition-all ${
+                    isActive 
+                      ? 'bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 text-amber-300 border-slate-750 shadow-[0_1.5px_2px_rgba(0,0,0,0.45),inset_0_1px_0.5px_rgba(255,255,255,0.2)]' 
+                      : 'bg-gradient-to-b from-white via-slate-100 to-slate-300 text-slate-800 border-slate-200 shadow-[0_1.5px_2px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_1px_rgba(0,0,0,0.2)]'
+                  }`}>
+                    <Icon className="w-3 h-3 font-extrabold" />
+                  </span>
+                  <span className="text-[11px] uppercase tracking-wider font-extrabold">{item.label}</span>
                 </button>
               );
             })}
@@ -238,15 +236,22 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="lg:hidden bg-[#00482B] px-6 py-4 space-y-3 border-t border-emerald-700 text-xs font-bold">
             {navItems.map((item) => {
               const isActive = currentPage === item.id;
+              const Icon = item.IconComponent;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`w-full text-left py-2 uppercase tracking-wider flex items-center gap-2 transition-colors ${
-                    isActive ? 'text-amber-300 font-extrabold' : 'text-white/80 hover:text-white'
+                  className={`w-full text-left py-2 uppercase tracking-wider flex items-center gap-3 transition-colors ${
+                    isActive ? 'text-amber-300 font-extrabold' : 'text-white/85 hover:text-white'
                   }`}
                 >
-                  {item.icon}
+                  <span className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 border ${
+                    isActive 
+                      ? 'bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 text-amber-300 border-slate-700 shadow-md' 
+                      : 'bg-gradient-to-b from-white via-slate-100 to-slate-300 text-slate-800 border-slate-200'
+                  }`}>
+                    <Icon className="w-3 h-3" />
+                  </span>
                   <span>{item.label}</span>
                 </button>
               );

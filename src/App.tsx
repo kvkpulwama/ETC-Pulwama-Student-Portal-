@@ -19,6 +19,7 @@ import { StudentAuthPage } from './pages/StudentAuthPage';
 import { StudentDashboard } from './pages/StudentDashboard';
 import { AdminPage } from './pages/AdminPage';
 import { StudentIdCardPage } from './pages/StudentIdCardPage';
+import { FaqPage } from './pages/FaqPage';
 import { Search, X, CheckCircle2, BookOpen, Download } from 'lucide-react';
 
 export default function App() {
@@ -220,6 +221,8 @@ export default function App() {
         )}
 
         {currentPage === 'contact' && <ContactPage />}
+
+        {currentPage === 'faq' && <FaqPage />}
 
         {currentPage === 'auth' && (
           <StudentAuthPage

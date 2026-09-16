@@ -4,6 +4,8 @@ import { COURSES, DEMO_STUDENTS } from '../data/mockData';
 import { supabase, fetchStudentsFromSupabase, saveStudentProfileToSupabase } from '../lib/supabase';
 import { SupabaseConfigGuide } from '../components/SupabaseConfigGuide';
 import { AdminDashboardView } from '../components/AdminDashboardView';
+import { BulkAnnouncementView } from '../components/BulkAnnouncementView';
+import { AdminAuditLogsView, addAuditLog } from '../components/AdminAuditLogsView';
 
 import { 
   ShieldCheck, 
@@ -74,7 +76,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   // Student management state
-  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase' | 'dashboard'>('dashboard');
+  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase' | 'dashboard' | 'announcements' | 'audit'>('dashboard');
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -590,6 +592,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     filtered.push(updatedStudent);
     localStorage.setItem('etc_registered_students', JSON.stringify(filtered));
 
+    // Audit Log Entry
+    if (editingStudent) {
+      addAuditLog(
+        'UPDATE',
+        `Modified trainee records for "${updatedStudent.name}". Updated fields: Contact, Address, or Course parameters.`,
+        updatedStudent.name,
+        updatedStudent.rollNumber
+      );
+    } else {
+      addAuditLog(
+        'CREATE',
+        `Registered new student "${updatedStudent.name}" enrolled in "${updatedStudent.courseTitle}".`,
+        updatedStudent.name,
+        updatedStudent.rollNumber
+      );
+    }
+
     setShowAddModal(false);
     showToast(editingStudent ? `Updated student profile: ${updatedStudent.name}` : `Added student & synced to Supabase: ${updatedStudent.name}`);
   };
@@ -619,6 +638,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       localStorage.setItem('etc_registered_students', JSON.stringify(filtered));
     }
 
+    addAuditLog(
+      'DELETE',
+      `Permanently deleted trainee profile for "${student.name}" (Roll: ${student.rollNumber}) from local storage and remote cloud databases.`,
+      student.name,
+      student.rollNumber
+    );
+
     showToast(`Deleted student record for ${student.name}`);
   };
 
@@ -635,6 +661,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       } catch (e) {
         console.warn('Supabase bulk delete notice:', e);
       }
+      addAuditLog(
+        'BULK_DELETE',
+        `Wiped all registered trainee records from local databases and remote Supabase tables to reset rosters.`
+      );
       setStudents([]);
       showToast("All registration data removed successfully. Registration list is now completely fresh.");
     } catch (err) {
@@ -657,6 +687,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         if (res.success) successCount++;
       }
       showToast(`Database Sync: Successfully pushed ${successCount} student profiles into Supabase table!`);
+      addAuditLog(
+        'SYNC',
+        `Successfully synchronised ${successCount} student profiles into the cloud database.`
+      );
     } catch (err: any) {
       showToast(`Database Sync Note: ${err?.message || 'Reflected all student records into local & cloud databases.'}`);
     } finally {
@@ -683,6 +717,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     
     // 3. Update State
     setStudents(keep);
+    addAuditLog(
+      'WIPE',
+      `Executed deep administrative purge wiping active student rosters except protected profiles (kept ${keep.length} records).`
+    );
     showToast('Database wiped successfully! Kept ' + keep.length + ' records.');
   };
 
@@ -1058,6 +1096,30 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <Database className="w-4 h-4 text-emerald-600" />
             <span>Supabase Credentials & OAuth Setup</span>
           </button>
+
+          <button
+            onClick={() => setActiveAdminTab('announcements')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
+              activeAdminTab === 'announcements'
+                ? 'bg-white border-slate-200 text-[#005E38] shadow-sm font-extrabold'
+                : 'bg-slate-100 border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Mail className="w-4 h-4 text-amber-600 animate-pulse" />
+            <span>Bulk Announcements & Circulars</span>
+          </button>
+
+          <button
+            onClick={() => setActiveAdminTab('audit')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
+              activeAdminTab === 'audit'
+                ? 'bg-white border-slate-200 text-[#005E38] shadow-sm font-extrabold'
+                : 'bg-slate-100 border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <span>Activity Audits</span>
+          </button>
         </div>
 
         {activeAdminTab === 'supabase' ? (
@@ -1070,6 +1132,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             batCount={batCount}
             shortTermCount={shortTermCount}
           />
+        ) : activeAdminTab === 'announcements' ? (
+          <BulkAnnouncementView students={students} />
+        ) : activeAdminTab === 'audit' ? (
+          <AdminAuditLogsView />
         ) : (
           <>
             {/* Statistics Cards */}

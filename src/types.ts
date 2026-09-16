@@ -1,4 +1,4 @@
-export type NavigationPage = 'home' | 'about' | 'courses' | 'idcard' | 'downloads' | 'gallery' | 'contact' | 'auth' | 'dashboard' | 'admin';
+export type NavigationPage = 'home' | 'about' | 'courses' | 'idcard' | 'downloads' | 'gallery' | 'contact' | 'auth' | 'dashboard' | 'admin' | 'faq';
 
 export interface Course {
   id: string;

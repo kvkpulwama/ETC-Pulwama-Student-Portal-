@@ -4,6 +4,7 @@ import { DEMO_MARKS, DEMO_ASSIGNMENTS, DEMO_TIMETABLE } from '../data/mockData';
 import { StudentIdCard } from '../components/StudentIdCard';
 import { RollNoSlipModal } from '../components/RollNoSlipModal';
 import { CertificateModal } from '../components/CertificateModal';
+import { EventsCalendar } from '../components/EventsCalendar';
 import { 
   UserCircle, 
   Award, 
@@ -36,7 +37,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onNavigate
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'idcard' | 'marksheet' | 'timetable' | 'assignments' | 'hostel'
+    'overview' | 'idcard' | 'marksheet' | 'timetable' | 'assignments' | 'hostel' | 'calendar'
   >('overview');
 
   const [showRollNoModal, setShowRollNoModal] = useState(false);
@@ -135,6 +136,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           { id: 'overview', label: 'Overview & Stats', icon: <HomeIcon className="w-4 h-4" /> },
           { id: 'idcard', label: 'Student I-Card', icon: <IdCard className="w-4 h-4 text-amber-600" /> },
           { id: 'marksheet', label: 'Marksheet & Grades', icon: <Award className="w-4 h-4" /> },
+          { id: 'calendar', label: 'Events Calendar', icon: <Calendar className="w-4 h-4 text-amber-500" /> },
           { id: "timetable", label: "Timetable", icon: <Calendar className="w-4 h-4" /> },
           { id: 'assignments', label: 'Assignments & Notes', icon: <FileText className="w-4 h-4" /> },
         ].map((tab) => (
@@ -297,6 +299,13 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Tab: Events & Training Calendar */}
+      {activeTab === 'calendar' && (
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <EventsCalendar />
         </div>
       )}
 
