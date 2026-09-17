@@ -282,7 +282,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Administration & Agro-Forestry',
     experience: '24+ Years',
     email: 'pcpulwama@gmail.com',
-    image: '/prof-mugloo-final.jpg',
+    image: '/dr_javeed_portrait.jpg',
     specialization: 'Temperate Fruit Pomology & Extension Architecture'
   },
   {
@@ -293,7 +293,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Animal Husbandry & Allied Science',
     experience: '12 Years',
     email: 'ajaz.ganie@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    image: '/dr_ajaz_portrait.jpg',
     specialization: 'Livestock Productivity & Veterinary Science'
   },
   {
@@ -304,7 +304,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Fruit Science & Orchards',
     experience: '14 Years',
     email: 'rayees.wani@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'High Density Apple Orchards & Canopy Management'
   },
   {
@@ -315,7 +315,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Agro-Forestry & Silviculture',
     experience: '10 Years',
     email: 'gowhar.parrey@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'Tree-Crop Interactions & Temperate Agro-Forestry Systems'
   },
   {
@@ -326,7 +326,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Soil Science & Testing',
     experience: '11 Years',
     email: 'shujat.hussain@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'Nutrient Dynamics & Soil Fertility Management'
   },
   {
@@ -337,7 +337,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Food Science & Post-Harvest',
     experience: '8 Years',
     email: 'towseef.wani@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'Post-Harvest Technology & Minimal Processing'
   },
   {
@@ -348,7 +348,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Plant Protection',
     experience: '9 Years',
     email: 'saleem.dar@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'Integrated Pest Management & Disease Control'
   },
   {
@@ -359,7 +359,7 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'IT & Database Management',
     experience: '12 Years',
     email: 'jahangir.magray@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
+    image: '/jahangir_portrait.jpg',
     specialization: 'Database Management, Portals & Student IT Systems'
   },
   {
@@ -370,12 +370,24 @@ export const FACULTY_LIST: FacultyMember[] = [
     department: 'Technical Administration',
     experience: '6 Years',
     email: 'shahnawaz.nazki@etcpulwama.edu',
-    image: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=400&q=80',
+    image: '/blank-avatar.svg',
     specialization: 'Office Administration & Classroom Tech Coordination'
   }
 ];
 
 export const DOWNLOADS_LIST: DownloadItem[] = [
+  {
+    id: 'd-dev-guide',
+    title: 'Developer Technical Guide & Architecture Handbook 2026',
+    category: 'Study Material',
+    fileType: 'PDF',
+    fileSize: '65 KB',
+    uploadDate: 'September 2026',
+    downloadsCount: 312,
+    directUrl: '/Developer_Guide_ETC_Pulwama.pdf',
+    description: 'Comprehensive engineering guide covering React 19, TypeScript, Express server, Supabase PostgreSQL configuration, and step-by-step local VS Code setup.',
+    contentPreview: 'SKUAST-KASHMIR | EXTENSION TRAINING CENTRE (ETC) MALANGPORA PULWAMA\nTECHNICAL ARCHITECTURE & DEVELOPER HANDBOOK\n\n1. Complete Technology Stack (React 19, TypeScript 5.8, Tailwind CSS v4, Node/Express, Supabase)\n2. Local development in Visual Studio Code (npm install, npm run dev, .env configuration)\n3. Supabase cloud PostgreSQL schema (CREATE TABLE public.students ...)\n4. Component architecture, directory structure, and developer customization cheat sheet.'
+  },
   {
     id: 'd-1',
     title: 'Basic Horticulture Training Course (BHT) Admission Form 2026-27',

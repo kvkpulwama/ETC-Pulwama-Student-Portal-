@@ -157,6 +157,40 @@ export const AdminAuditLogsView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Activity Log Header Banner */}
+      <div className="bg-gradient-to-r from-emerald-950 via-[#00472A] to-slate-900 rounded-3xl p-6 sm:p-8 text-white border border-emerald-800 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-amber-400 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full font-mono">
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>Auditing &amp; Compliance Module</span>
+          </div>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            Administrative Activity Log
+          </h2>
+          <p className="text-xs sm:text-sm text-emerald-100/80 max-w-2xl leading-relaxed">
+            Automatic chronological ledger recording every creation, edit, deletion, and database sync performed on student records by the administrator for institutional auditing.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => window.print()}
+            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 transition-all flex items-center gap-2 shadow-sm"
+            title="Print audit log for offline institutional records"
+          >
+            <Printer className="w-4 h-4 text-amber-300" />
+            <span>Print Audit Report</span>
+          </button>
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition-all flex items-center gap-2 shadow-md"
+          >
+            <Download className="w-4 h-4 text-slate-950" />
+            <span>Download CSV</span>
+          </button>
+        </div>
+      </div>
+
       {/* Overview stats row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
@@ -173,7 +207,7 @@ export const AdminAuditLogsView: React.FC = () => {
           <p className="text-2xl font-black text-amber-700">
             {logs.filter(l => l.action === 'UPDATE').length}
           </p>
-          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Record Changes</p>
+          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Student Profile Edits</p>
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
           <p className="text-2xl font-black text-rose-800">

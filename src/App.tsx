@@ -21,10 +21,53 @@ import { AdminPage } from './pages/AdminPage';
 import { StudentIdCardPage } from './pages/StudentIdCardPage';
 import { FaqPage } from './pages/FaqPage';
 import { Search, X, CheckCircle2, BookOpen, Download } from 'lucide-react';
+import { useSiteConfig } from './lib/siteConfigStore';
+import { trackPageView, trackEngagementEvent } from './lib/analyticsStore';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<NavigationPage>('home');
+  const { config } = useSiteConfig();
+
+  // Inject Custom Developer CSS
+  useEffect(() => {
+    if (config?.developer?.customCss) {
+      let styleTag = document.getElementById('etc-custom-css');
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'etc-custom-css';
+        document.head.appendChild(styleTag);
+      }
+      styleTag.textContent = config.developer.customCss;
+    }
+  }, [config]);
+  const [currentPage, setCurrentPage] = useState<NavigationPage>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const pageParam = params.get('page') as NavigationPage;
+      if (pageParam && ['home', 'about', 'courses', 'idcard', 'downloads', 'gallery', 'contact', 'faq', 'auth', 'admin', 'dashboard'].includes(pageParam)) {
+        return pageParam;
+      }
+    } catch (e) {}
+    return 'home';
+  });
   const [loggedInStudent, setLoggedInStudent] = useState<StudentProfile | null>(null);
+
+  // Track Page Views automatically
+  useEffect(() => {
+    const pageLabels: Record<string, string> = {
+      home: 'Home Knowledge Hub',
+      about: 'About ETC Pulwama',
+      courses: 'Courses & Diplomas',
+      idcard: 'Student ID Card Portal',
+      downloads: 'Downloads & Syllabus',
+      gallery: 'Campus Gallery',
+      contact: 'Contact & Helpline',
+      faq: 'FAQ & Verification',
+      auth: 'Student Registration / Login',
+      admin: 'Admin Console',
+      dashboard: 'Student Trainee Dashboard'
+    };
+    trackPageView(pageLabels[currentPage] || currentPage, `?page=${currentPage}`);
+  }, [currentPage]);
 
   // Active Modals
   const [activeCourseModal, setActiveCourseModal] = useState<Course | null>(null);
@@ -43,14 +86,20 @@ export default function App() {
       const savedStudent = secureStorage.getItem<StudentProfile>('etc_logged_student');
       if (savedStudent) {
         setLoggedInStudent(savedStudent);
-        setCurrentPage('dashboard');
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('page') !== 'admin') {
+          setCurrentPage('dashboard');
+        }
       } else {
         const plainSaved = localStorage.getItem('etc_logged_student');
         if (plainSaved) {
           const student = JSON.parse(plainSaved);
           setLoggedInStudent(student);
           secureStorage.setItem('etc_logged_student', student);
-          setCurrentPage('dashboard');
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('page') !== 'admin') {
+            setCurrentPage('dashboard');
+          }
         }
       }
     } catch (e) {

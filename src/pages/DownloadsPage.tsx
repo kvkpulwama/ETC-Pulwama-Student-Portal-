@@ -3,6 +3,7 @@ import { DownloadItem, StudentProfile, NavigationPage } from '../types';
 import { DOWNLOADS_LIST } from '../data/mockData';
 import { RollNoSlipModal } from '../components/RollNoSlipModal';
 import { CertificateModal } from '../components/CertificateModal';
+import { trackEngagementEvent } from '../lib/analyticsStore';
 import { 
   Download, 
   Search, 
@@ -20,7 +21,9 @@ import {
   Stamp,
   Check,
   ChevronRight,
-  IdCard
+  IdCard,
+  Terminal,
+  FileCode
 } from 'lucide-react';
 
 interface DownloadsPageProps {
@@ -39,11 +42,22 @@ export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument,
   const categories = ['All', 'Admission Forms', 'Syllabus & Curricula', 'Exam Date Sheets', 'Study Material', 'Certificates & Requests'];
 
   const handleOpenCertificate = (type: 'BHT' | 'BAT') => {
+    trackEngagementEvent('pdf_download', `Generated ${type} Official Diploma Certificate`, 'Downloads & Syllabus');
     setCertCourseType(type);
     setShowCertModal(true);
   };
 
   const handleDocumentAction = (doc: DownloadItem) => {
+    trackEngagementEvent('pdf_download', `Downloaded ${doc.title}`, 'Downloads & Syllabus');
+    if (doc.directUrl) {
+      const link = document.createElement('a');
+      link.href = doc.directUrl;
+      link.download = doc.directUrl.split('/').pop() || 'Developer_Guide_ETC_Pulwama.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
     if (doc.id === 'd-cert-bht') {
       handleOpenCertificate('BHT');
     } else if (doc.id === 'd-cert-bat') {
@@ -65,18 +79,24 @@ export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument,
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-emerald-800 space-y-4 relative overflow-hidden">
-        <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-700/60 text-amber-300 text-xs font-bold px-3 py-1 rounded-full">
-          <Download className="w-3.5 h-3.5" />
-          <span>OFFICIAL DOCUMENT &amp; CERTIFICATION REPOSITORY</span>
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-[#03301D] to-slate-950 text-white p-8 sm:p-12 shadow-2xl border border-emerald-800/70 space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 bg-emerald-900/90 border border-emerald-600/60 text-amber-300 text-xs font-bold font-mono px-3.5 py-1.5 rounded-full shadow-sm">
+            <Download className="w-3.5 h-3.5" />
+            <span>OFFICIAL DOCUMENT &amp; CERTIFICATION REPOSITORY</span>
+          </div>
+
+          <div className="inline-flex items-center gap-2 bg-white/10 text-emerald-100 text-xs font-bold px-3 py-1.5 rounded-full border border-white/15 backdrop-blur-sm">
+            <span>SKUAST-Kashmir Centre</span>
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+        <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-tight text-white leading-tight">
           Downloads Center &amp; Certificate Portal
         </h1>
 
-        <p className="text-sm sm:text-base text-emerald-100 max-w-3xl leading-relaxed">
-          Download official BHT &amp; BAT course completion certificates, application forms, academic syllabi, examination date sheets, technical apple handbooks, and Roll No. examination admit slips.
+        <p className="text-sm sm:text-base text-emerald-100/90 max-w-3xl leading-relaxed font-normal">
+          Download official BHT &amp; BAT course completion certificates, developer documentation, application forms, academic syllabi, examination date sheets, technical apple handbooks, and Roll No. admit slips.
         </p>
       </div>
 
@@ -253,6 +273,48 @@ export const DownloadsPage: React.FC<DownloadsPageProps> = ({ onPreviewDocument,
           <IdCard className="w-5 h-5 text-emerald-800" />
           <span>Open Student I-Card Portal</span>
         </button>
+      </div>
+
+      {/* Developer & Technical Architecture Handbook Card */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-700/60 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div className="space-y-2 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 bg-indigo-900/80 text-cyan-300 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider font-mono shadow-sm border border-indigo-700">
+            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+            <span>DEVELOPER &amp; WEBMASTER HANDBOOK 2026</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Complete Technical Architecture &amp; VS Code Guide (PDF)
+          </h2>
+          <p className="text-xs sm:text-sm font-normal text-slate-300 max-w-2xl leading-relaxed">
+            Download the official engineering manual containing the complete technology stack (React 19, TypeScript, Express, Tailwind CSS), step-by-step local VS Code installation, Supabase PostgreSQL SQL schemas, and component customization cheat sheets.
+          </p>
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-[11px] font-mono text-cyan-200">
+            <span className="bg-slate-800/80 px-2.5 py-1 rounded-md border border-indigo-500/40">PDF Format (4 Pages)</span>
+            <span className="bg-slate-800/80 px-2.5 py-1 rounded-md border border-indigo-500/40">React 19 + TypeScript</span>
+            <span className="bg-slate-800/80 px-2.5 py-1 rounded-md border border-indigo-500/40">Supabase SQL Schema</span>
+            <span className="bg-slate-800/80 px-2.5 py-1 rounded-md border border-indigo-500/40">VS Code Execution</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+          <a
+            href="/Developer_Guide_ETC_Pulwama.pdf"
+            download="Developer_Guide_ETC_Pulwama.pdf"
+            className="px-6 py-3.5 bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-2xl transition-all shadow-xl flex items-center gap-2 border border-cyan-300 hover:scale-105 active:scale-95"
+          >
+            <Download className="w-5 h-5 text-slate-950" />
+            <span>Download PDF Guide</span>
+          </a>
+          <a
+            href="/Developer_Guide_ETC_Pulwama.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-5 py-3.5 bg-slate-800/90 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm rounded-2xl transition-all border border-slate-600 flex items-center gap-2"
+          >
+            <Eye className="w-4 h-4 text-cyan-400" />
+            <span>View in Browser</span>
+          </a>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}

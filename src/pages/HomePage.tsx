@@ -1,226 +1,277 @@
 import React from 'react';
-import { NavigationPage, Course } from '../types';
-import { COURSES } from '../data/mockData';
-import { CourseCard } from '../components/CourseCard';
-import { SKUAST_LOGO_DATA_URI } from '../assets/logoBase64';
+import { NavigationPage } from '../types';
+import { useSiteConfig } from '../lib/siteConfigStore';
 import { 
-  BookOpen, 
-  Sparkles, 
-  ChevronRight, 
-  Download, 
-  FileSpreadsheet,
+  GraduationCap, 
+  Building2, 
+  Users, 
+  Target, 
+  Award, 
+  Sparkles,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
   Clock,
-  ClipboardList,
-  ShieldCheck,
-  Award,
-  IdCard,
-  MapPin,
-  GraduationCap
+  CreditCard,
+  FileText,
+  Download,
+  ChevronRight,
+  IdCard
 } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (page: NavigationPage) => void;
-  onSelectCourse: (course: Course) => void;
-  onApplyCourse: (course: Course) => void;
+  onSelectCourse?: (course: any) => void;
+  onApplyCourse?: (course: any) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({
-  onNavigate,
-  onSelectCourse,
-  onApplyCourse
-}) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
+  const { config } = useSiteConfig();
+  const impactMetrics = [
+    {
+      id: 'diplomates',
+      number: '1,200+',
+      label: 'Certified Diplomates',
+      description: 'Graduated from official 1-year BHT (Horticulture) & BAT (Agriculture) programs serving in agricultural departments and rural enterprises.',
+      icon: GraduationCap,
+      color: 'emerald',
+      bgLight: 'bg-emerald-50',
+      textDark: 'text-emerald-900',
+      iconColor: 'text-emerald-700'
+    },
+    {
+      id: 'demos',
+      number: '150+',
+      label: 'Field Demonstrations',
+      description: 'Annual applied trials conducted in high-density orchards, nursery management, rootstock propagation, and IPM protocols.',
+      icon: Building2,
+      color: 'amber',
+      bgLight: 'bg-amber-50',
+      textDark: 'text-amber-900',
+      iconColor: 'text-amber-700'
+    },
+    {
+      id: 'fpos',
+      number: '45+',
+      label: 'FPOs & Collectives',
+      description: 'Farmer Producer Organizations, rural self-help groups, and youth agri-enterprises mentored with scientific input advisory.',
+      icon: Users,
+      color: 'teal',
+      bgLight: 'bg-teal-50',
+      textDark: 'text-teal-900',
+      iconColor: 'text-teal-700'
+    },
+    {
+      id: 'consultations',
+      number: '2,500+',
+      label: 'Annual Farmer Consultations',
+      description: 'Real-time diagnostic support for orchard disease management, soil health testing, nutrient deficiency, and weather advisories.',
+      icon: Target,
+      color: 'sky',
+      bgLight: 'bg-sky-50',
+      textDark: 'text-sky-900',
+      iconColor: 'text-sky-700'
+    },
+    {
+      id: 'legacy',
+      number: '40+',
+      label: 'Years of Extension Legacy',
+      description: 'Continuous grassroots extension, capacity building, and technology dissemination across Jammu & Kashmir since 1978.',
+      icon: Clock,
+      color: 'indigo',
+      bgLight: 'bg-indigo-50',
+      textDark: 'text-indigo-900',
+      iconColor: 'text-indigo-700'
+    },
+    {
+      id: 'immersion',
+      number: '100%',
+      label: 'Practical Field Immersion',
+      description: 'Hands-on experiential learning across research orchards, automated polyhouses, and state-of-the-art soil testing labs.',
+      icon: Award,
+      color: 'rose',
+      bgLight: 'bg-rose-50',
+      textDark: 'text-rose-900',
+      iconColor: 'text-rose-700'
+    }
+  ];
+
   return (
-    <div className="space-y-12 pb-16 bg-slate-50 min-h-screen">
-      {/* Hero Section with Official SKUAST Kashmir Logo */}
-      <section className="relative text-white pt-16 pb-28 px-4 sm:px-8 overflow-hidden min-h-[520px] flex items-center justify-center">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 z-0 bg-[url('/campus_banner_kashmir.jpg')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#005E38]/90 via-[#014429]/85 to-slate-950/95"></div>
-        
-        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center space-y-8">
-          
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-black tracking-tight leading-[1.15] max-w-5xl text-amber-300 py-4 drop-shadow-lg">
+    <div className="bg-[#FDFCFB] space-y-12 pb-16">
+      {/* Hero Banner */}
+      <div className="relative bg-gradient-to-b from-[#0F4C2E] via-[#0A3A22] to-[#072415] text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-emerald-900/60 overflow-hidden shadow-xl">
+        {/* Ambient Subtle Radial Light */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none"></div>
+
+        <div className="max-w-6xl mx-auto text-center relative z-10 space-y-3">
+          {config.hero.badgeText && (
+            <div className="inline-flex items-center gap-2 bg-amber-400/10 text-amber-300 border border-amber-400/30 px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider font-mono">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>{config.hero.badgeText}</span>
+            </div>
+          )}
+          {/* Main Title: LEARN • GROW • LEAD */}
+          <h1 className="font-serif font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-[#FFC107] drop-shadow-md uppercase">
             LEARN • GROW • LEAD
           </h1>
-
-          <div className="flex flex-wrap justify-center items-center gap-4 pt-2">
-            <button
-              onClick={() => onNavigate('idcard')}
-              className="px-7 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-2"
-            >
-              <IdCard className="w-4 h-4 text-slate-900" />
-              <span>Student I-Card Portal</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('dashboard')}
-              className="px-7 py-3.5 bg-emerald-800 hover:bg-emerald-700 text-white border border-emerald-500 font-bold text-xs sm:text-sm uppercase tracking-wide rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-1"
-            >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Student Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('courses')}
-              className="px-7 py-3.5 bg-slate-900/80 hover:bg-slate-900 text-white border border-slate-700 font-bold text-xs sm:text-sm uppercase tracking-wide rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-1"
-            >
-              <BookOpen className="w-4 h-4 text-emerald-400" />
-              <span>View Programmes</span>
-            </button>
-          </div>
+          {config.hero.subTitle && (
+            <p className="text-sm sm:text-base text-emerald-100/90 max-w-3xl mx-auto font-medium leading-relaxed">
+              {config.hero.subTitle}
+            </p>
+          )}
         </div>
-      </section>
+      </div>
 
-      {/* Quick Access Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-16 relative z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[
-            {
-              title: 'Student I-Card',
-              sub: 'PVC card generation & print',
-              icon: <IdCard className="w-6 h-6 text-[#005E38]" />,
-              page: 'idcard' as NavigationPage,
-              badge: 'I-Card'
-            },
-            {
-              title: 'Course Materials',
-              sub: 'Notes & resources',
-              icon: <FileSpreadsheet className="w-6 h-6 text-[#005E38]" />,
-              page: 'downloads' as NavigationPage,
-              badge: 'Study'
-            },
-            {
-              title: 'Class Schedule',
-              sub: 'Weekly timetable',
-              icon: <Clock className="w-6 h-6 text-[#005E38]" />,
-              page: 'downloads' as NavigationPage,
-              badge: 'Timetable'
-            },
-            {
-              title: 'Downloads & Forms',
-              sub: 'Certificates & forms',
-              icon: <Download className="w-6 h-6 text-[#005E38]" />,
-              page: 'downloads' as NavigationPage,
-              badge: 'PDF Desk'
-            }
-          ].map((card, idx) => (
-            <div
-              key={idx}
-              onClick={() => onNavigate(card.page)}
-              className="bg-white rounded-2xl p-5 shadow-lg border border-slate-200 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group cursor-pointer flex items-start gap-4"
-            >
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:bg-[#005E38] transition-colors duration-300">
-                {React.cloneElement(card.icon, {
-                  className: "w-6 h-6 text-[#005E38] group-hover:text-amber-400 transition-colors"
-                })}
-              </div>
-              <div className="space-y-0.5 flex-1 pr-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-slate-900 text-sm group-hover:text-[#005E38] transition-colors">
-                    {card.title}
-                  </h3>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#005E38] transition-colors" />
-                </div>
-                <p className="text-xs text-slate-500">{card.sub}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* University Institutional Identity & Affiliation Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="bg-gradient-to-r from-emerald-900 via-[#005E38] to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-emerald-700/60 relative overflow-hidden">
-          {/* Subtle background decorative seal */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 opacity-10 pointer-events-none w-72 h-72">
-            <img src={SKUAST_LOGO_DATA_URI} alt="" className="w-full h-full object-contain" />
-          </div>
-
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 justify-between">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1.5 shadow-xl border-2 border-amber-400 flex items-center justify-center shrink-0 overflow-hidden">
-                <img 
-                  src={SKUAST_LOGO_DATA_URI} 
-                  alt="SKUAST-Kashmir Crest" 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-950/80 border border-amber-400/40 text-amber-300 text-[11px] font-bold uppercase font-mono">
-                  <Award className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Official University Affiliation</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-serif font-black text-white">
-                  Sher-e-Kashmir University of Agricultural Sciences &amp; Technology of Kashmir
-                </h3>
-                <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl leading-relaxed">
-                  Established in 1982, SKUAST-Kashmir is Jammu &amp; Kashmir&apos;s leading agricultural sciences university. The 
-                  <strong> Extension Training Centre (ETC) Malangpora Pulwama</strong> conducts comprehensive diploma programmes, 
-                  farmer extension modules, and vocational horticulture certifications under university academic standards.
-                </p>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 pt-1 text-xs text-emerald-200">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Malangpora Campus, Pulwama - 192308</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <GraduationCap className="w-3.5 h-3.5 text-amber-300" />
-                    <span>BHT &amp; BAT Diploma Programmes</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
-              <button
-                onClick={() => onNavigate('idcard')}
-                className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
-              >
-                <IdCard className="w-4 h-4 text-slate-900" />
-                <span>Get Trainee I-Card</span>
-              </button>
-              <button
-                onClick={() => onNavigate('about')}
-                className="px-5 py-2.5 bg-emerald-950/70 hover:bg-emerald-950 text-white border border-emerald-600 font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2"
-              >
-                <span>About Institute</span>
-                <ChevronRight className="w-3.5 h-3.5 text-amber-300" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Programmes */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
-          <div>
-            <h2 className="text-2xl font-serif font-bold text-slate-900">
-              Featured Programmes
-            </h2>
-            <p className="text-sm text-slate-600">Explore our diploma and training courses</p>
-          </div>
+      {/* Floating Action Cards Row (Exact Match to Screenshot) */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Student I-Card */}
           <button
-            onClick={() => onNavigate('courses')}
-            className="text-sm font-bold text-[#005E38] hover:text-emerald-800 flex items-center gap-1 hover:underline"
+            onClick={() => onNavigate('idcard')}
+            className="bg-white hover:bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-lg hover:shadow-xl hover:border-emerald-500/60 transition-all text-left group flex items-center justify-between gap-3"
           >
-            <span>View All</span>
-            <ChevronRight className="w-4 h-4" />
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <CreditCard className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-serif font-black text-slate-900 text-sm leading-tight group-hover:text-emerald-800 transition-colors">
+                  Student I-Card
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                  PVC card generation &amp; print
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </button>
+
+          {/* Card 2: Course Materials */}
+          <button
+            onClick={() => onNavigate('downloads')}
+            className="bg-white hover:bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-lg hover:shadow-xl hover:border-emerald-500/60 transition-all text-left group flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <FileText className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-serif font-black text-slate-900 text-sm leading-tight group-hover:text-emerald-800 transition-colors">
+                  Course Materials
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                  Notes &amp; resources
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </button>
+
+          {/* Card 3: Class Schedule */}
+          <button
+            onClick={() => onNavigate('downloads')}
+            className="bg-white hover:bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-lg hover:shadow-xl hover:border-emerald-500/60 transition-all text-left group flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Clock className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-serif font-black text-slate-900 text-sm leading-tight group-hover:text-emerald-800 transition-colors">
+                  Class Schedule
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                  Weekly timetable
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </button>
+
+          {/* Card 4: Downloads & Forms */}
+          <button
+            onClick={() => onNavigate('downloads')}
+            className="bg-white hover:bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-lg hover:shadow-xl hover:border-emerald-500/60 transition-all text-left group flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Download className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-serif font-black text-slate-900 text-sm leading-tight group-hover:text-emerald-800 transition-colors">
+                  Downloads &amp; Forms
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                  Certificates &amp; forms
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all shrink-0" />
           </button>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {COURSES.slice(0, 3).map((course) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              onSelect={onSelectCourse}
-              onApply={onApplyCourse}
-            />
-          ))}
+      </div>
+
+      {/* Impact Section */}
+      <div className="max-w-6xl mx-auto w-full space-y-12 px-4 sm:px-6 lg:px-8 pt-6">
+        {/* Header / Eyebrow */}
+        <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 bg-emerald-900/5 border border-emerald-800/15 text-emerald-900 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider font-mono">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span>KVK / ETC Malangpora Pulwama • SKUAST-Kashmir</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-slate-900 leading-tight">
+            Our Impact as a Knowledge Hub
+          </h2>
+
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+            Delivering integrated, real-time, and location-specific solutions to farmers, entrepreneurs, FPOs, and rural youth across Jammu &amp; Kashmir through scientific research and hands-on agricultural extension.
+          </p>
         </div>
-      </section>
+
+        {/* Impact Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {impactMetrics.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <div
+                key={item.id}
+                className="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-600/50 transition-all duration-300 space-y-4 flex flex-col justify-between group relative overflow-hidden"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-12 h-12 rounded-2xl ${item.bgLight} ${item.iconColor} flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform`}>
+                      <IconComponent className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
+                      ETC Pulwama
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="text-4xl sm:text-5xl font-serif font-black text-slate-900 tracking-tight">
+                      {item.number}
+                    </div>
+                    <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-800 font-mono">
+                      {item.label}
+                    </h2>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-slate-400 group-hover:text-emerald-700 transition-colors">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Verified Institutional Outreach</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
+

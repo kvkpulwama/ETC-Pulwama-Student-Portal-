@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Bell, ChevronRight, X, AlertCircle, FileText } from 'lucide-react';
-import { NOTICES } from '../data/mockData';
+import { Bell, ChevronRight, X, AlertCircle, FileText, Zap } from 'lucide-react';
 import { NoticeItem } from '../types';
+import { useSiteConfig } from '../lib/siteConfigStore';
 
 interface NoticeTickerProps {
   onSelectNotice?: (notice: NoticeItem) => void;
 }
 
 export const NoticeTicker: React.FC<NoticeTickerProps> = ({ onSelectNotice }) => {
+  const { config } = useSiteConfig();
   const [activeModalNotice, setActiveModalNotice] = useState<NoticeItem | null>(null);
 
   const handleItemClick = (notice: NoticeItem) => {
@@ -17,8 +18,18 @@ export const NoticeTicker: React.FC<NoticeTickerProps> = ({ onSelectNotice }) =>
     }
   };
 
+  const noticesToDisplay = config.notices && config.notices.length > 0 ? config.notices : [];
+
   return (
     <>
+      {/* Top Emergency Notice Bar if enabled in CMS */}
+      {config.hero.showEmergencyNotice && config.hero.emergencyNoticeText && (
+        <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-xs py-2 px-4 text-center shadow-md border-b border-amber-600 flex items-center justify-center gap-2">
+          <Zap className="w-4 h-4 fill-slate-950 animate-bounce shrink-0" />
+          <span>{config.hero.emergencyNoticeText}</span>
+        </div>
+      )}
+
       <div className="bg-gradient-to-r from-[#022c1e] via-[#064e3b] to-[#022c1e] text-white text-xs py-2.5 px-4 border-b border-emerald-800/80 shadow-inner">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           {/* Label Badge with Pulsing Live Indicator */}
@@ -31,7 +42,7 @@ export const NoticeTicker: React.FC<NoticeTickerProps> = ({ onSelectNotice }) =>
           {/* Marquee / Ticker text */}
           <div className="overflow-hidden relative w-full flex-1">
             <div className="flex items-center space-x-10 animate-marquee whitespace-nowrap hover:[animation-play-state:paused] cursor-pointer text-emerald-100">
-              {NOTICES.map((n) => (
+              {noticesToDisplay.map((n) => (
                 <button
                   key={n.id}
                   onClick={() => handleItemClick(n)}

@@ -6,8 +6,12 @@ import { SupabaseConfigGuide } from '../components/SupabaseConfigGuide';
 import { AdminDashboardView } from '../components/AdminDashboardView';
 import { BulkAnnouncementView } from '../components/BulkAnnouncementView';
 import { AdminAuditLogsView, addAuditLog } from '../components/AdminAuditLogsView';
+import { AdminDeveloperCMSStudio } from '../components/AdminDeveloperCMSStudio';
+import { AdminAnalyticsView } from '../components/AdminAnalyticsView';
 
 import { 
+  Activity,
+  Terminal,
   ShieldCheck, 
   Lock, 
   Mail, 
@@ -40,7 +44,8 @@ import {
   Layers,
   Bell,
   Volume2,
-  VolumeX
+  VolumeX,
+  ExternalLink
 } from 'lucide-react';
 
 interface AdminPageProps {
@@ -76,7 +81,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   // Student management state
-  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase' | 'dashboard' | 'announcements' | 'audit'>('dashboard');
+  const [activeAdminTab, setActiveAdminTab] = useState<'students' | 'supabase' | 'dashboard' | 'announcements' | 'audit' | 'cms' | 'analytics'>('dashboard');
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -865,10 +870,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </button>
           </form>
 
-          <div className="text-center pt-2">
+          <div className="flex flex-col items-center gap-2 pt-2 text-xs">
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}${window.location.pathname}?page=admin`;
+                window.open(url, 'ETCAdminPortalWindow', 'width=1280,height=900,menubar=no,toolbar=no,location=no,status=no');
+              }}
+              className="text-amber-300 hover:text-amber-200 transition-colors flex items-center gap-1.5 font-semibold"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Launch Admin Portal in Standalone Window</span>
+            </button>
+
             <button
               onClick={() => onNavigate('home')}
-              className="text-xs text-slate-400 hover:text-white underline transition-colors"
+              className="text-slate-400 hover:text-white underline transition-colors"
             >
               ← Return to Main Student Website
             </button>
@@ -1040,6 +1056,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
 
             <button
+              onClick={() => {
+                const url = `${window.location.origin}${window.location.pathname}?page=admin`;
+                window.open(url, 'ETCAdminPortalWindow', 'width=1280,height=900,menubar=no,toolbar=no,location=no,status=no');
+              }}
+              className="px-3 py-2.5 bg-emerald-950 hover:bg-emerald-900 text-amber-300 font-bold text-xs rounded-xl border border-emerald-700 transition-colors flex items-center gap-1.5"
+              title="Open Admin Console in Standalone Window"
+            >
+              <ExternalLink className="w-4 h-4 text-amber-300" />
+              <span className="hidden sm:inline">Popout Window</span>
+            </button>
+
+            <button
               onClick={handleOpenAddModal}
               className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
             >
@@ -1118,11 +1146,39 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>Activity Audits</span>
+            <span>Activity Log</span>
+          </button>
+
+          <button
+            onClick={() => setActiveAdminTab('analytics')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
+              activeAdminTab === 'analytics'
+                ? 'bg-emerald-950 border-emerald-900 text-emerald-300 shadow-md font-extrabold'
+                : 'bg-emerald-50 border-emerald-200 text-emerald-900 hover:bg-emerald-100'
+            }`}
+          >
+            <Activity className="w-4 h-4 text-emerald-600 animate-pulse" />
+            <span>Visitor Analytics &amp; Engagement</span>
+          </button>
+
+          <button
+            onClick={() => setActiveAdminTab('cms')}
+            className={`px-4 py-2.5 rounded-t-xl transition-all flex items-center gap-2 border-t border-x ${
+              activeAdminTab === 'cms'
+                ? 'bg-slate-900 border-slate-800 text-amber-300 shadow-lg font-extrabold'
+                : 'bg-amber-400/20 border-amber-400/30 text-amber-900 hover:text-slate-950 hover:bg-amber-400/30'
+            }`}
+          >
+            <Terminal className="w-4 h-4 text-amber-500 animate-pulse" />
+            <span className="font-mono">Site CMS &amp; Developer Studio</span>
           </button>
         </div>
 
-        {activeAdminTab === 'supabase' ? (
+        {activeAdminTab === 'analytics' ? (
+          <AdminAnalyticsView />
+        ) : activeAdminTab === 'cms' ? (
+          <AdminDeveloperCMSStudio />
+        ) : activeAdminTab === 'supabase' ? (
           <SupabaseConfigGuide />
         ) : activeAdminTab === 'dashboard' ? (
           <AdminDashboardView 

@@ -40,18 +40,24 @@ export const ContactPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-emerald-800 space-y-4">
-        <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-700/60 text-amber-300 text-xs font-bold px-3 py-1 rounded-full">
-          <Phone className="w-3.5 h-3.5" />
-          <span>OFFICIAL HELPLINE & CAMPUS DIRECTORY</span>
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-[#03301D] to-slate-950 text-white p-8 sm:p-12 shadow-2xl border border-emerald-800/70 space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 bg-emerald-900/90 border border-emerald-600/60 text-amber-300 text-xs font-bold font-mono px-3.5 py-1.5 rounded-full shadow-sm">
+            <Phone className="w-3.5 h-3.5" />
+            <span>OFFICIAL HELPLINE &amp; CAMPUS DIRECTORY</span>
+          </div>
+
+          <div className="inline-flex items-center gap-2 bg-white/10 text-emerald-100 text-xs font-bold px-3 py-1.5 rounded-full border border-white/15 backdrop-blur-sm">
+            <span>SKUAST-Kashmir Centre</span>
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+        <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-tight text-white leading-tight">
           Contact Extension Training Centre Pulwama
         </h1>
 
-        <p className="text-sm sm:text-base text-emerald-100 max-w-3xl leading-relaxed">
-          Have questions regarding <strong>Basic Horticulture Training (BHT)</strong> or <strong>Basic Agriculture Training (BAT)</strong> admissions? Reach out to our training office or send an online inquiry.
+        <p className="text-sm sm:text-base text-emerald-100/90 max-w-3xl leading-relaxed font-normal">
+          Have questions regarding <strong>Basic Horticulture Training (BHT)</strong> or <strong>Basic Agriculture Training (BAT)</strong> admissions, certifications, or advisory services? Reach out to our training office at Malangpora or submit an inquiry.
         </p>
       </div>
 
